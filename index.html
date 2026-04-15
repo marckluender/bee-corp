@@ -1,34 +1,71 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
     <meta charset="UTF-8">
     <title>Bee-Corp: BeeBabaluga's Masterplan</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body onclick="handleGlobalClick(event)">
 
     <div id="upgrade-overlay">
         <h1>🍯 Forschungszentrum</h1>
         <div id="upgrade-list"></div>
-        <button onclick="toggleUpgradeMenu(false)" style="background:#95a5a6; padding: 10px 30px; margin-top: 20px;">Zurück zum Stock</button>
+        <button onclick="toggleUpgradeMenu(false)"
+            style="background:#95a5a6; padding: 10px 30px; margin-top: 20px;">Zurück zum Stock</button>
     </div>
 
     <div id="village-grid">
         <div id="top-alert-bar" onclick="toggleUpgradeMenu(true)">✨ NEUES UPGRADE VERFÜGBAR! ✨</div>
         <div class="plot" id="plot-wax">
-            <div id="wax-placeholder" class="placeholder-ui">
-                <button id="buy-btn" onclick="buyWaxStore(event)" disabled>WaxStore bauen (25 Honig)</button>
+            <div style="position: relative; width: 100%;">
+                <img id="wax-img" src="gfx/wax_0.png" class="building-img">
+                <div id="wax-placeholder" class="placeholder-ui">
+                    <button id="buy-btn" onclick="buyWaxStore(event)" disabled>WaxStore (25 Honig)</button>
+                </div>
             </div>
-            <img id="wax-img" src="gxf/wax_1.png" class="building-img">
             <div id="wax-controls" class="building-controls">
                 <div style="font-size: 0.8rem; margin-bottom: 5px; color: #444;">
-                    👷 Arbeiter: <span id="wax-workers" style="font-weight:bold">0</span><br>
+                    👷 Bienen: <span id="wax-workers" style="font-weight:bold">0</span><br>
                     🏭 Eigen-Produktion: <span id="wax-auto-prod">0</span>/5s
                 </div>
                 <button onclick="addWorker(event)" style="background:#3498db; padding: 8px;">+ Biene zuweisen</button>
             </div>
         </div>
-        <div class="plot"></div><div class="plot"></div><div class="plot"></div>
+        <div class="plot" id="plot-nektar">
+            <div style="position: relative; width: 100%;">
+                <img id="nektar-img" src="gfx/nektar_0.png" class="building-img" alt="NektarStore">
+                <div id="nektar-placeholder" class="placeholder-ui">
+                    <button id="buy-nektar-btn" onclick="buyNektarStore(event)" disabled
+                        style="background:#9b59b6;">NektarStore (25 Honig)</button>
+                </div>
+            </div>
+            <div id="nektar-controls" class="building-controls">
+                <div style="font-size: 0.8rem; margin-bottom: 5px; color: #444;">
+                    👷 Bienen: <span id="nektar-workers" style="font-weight:bold; color: #9b59b6;">0</span><br>
+                    🌸 Nektar-Produktion: <span id="nektar-auto-prod" style="color: #9b59b6;">0</span>/5s
+                </div>
+                <button onclick="addWorkerNektar(event)" style="background:#e056fd; padding: 8px; color: white;">+ Biene
+                    zuweisen</button>
+            </div>
+        </div>
+        <div class="plot" id="plot-pollen" style="display: none;">
+            <div style="position: relative; width: 100%;">
+                <div id="pollen-img" class="building-img" style="background:#bdc3c7; display:flex; align-items:center; justify-content:center; height:150px; border-radius:10px; color:#555; text-align:center; box-sizing: border-box; padding: 10px; font-weight: bold;">(Bild fehlt)</div>
+                <div id="pollen-placeholder" class="placeholder-ui">
+                    <button id="buy-pollen-btn" onclick="buyPollenStore(event)" disabled style="background:#d35400;">Akademie (250 🍯)</button>
+                </div>
+            </div>
+            <div id="pollen-controls" class="building-controls">
+                <div style="font-size: 0.8rem; margin-bottom: 5px; color: #444;">
+                    👷 Bienen: <span id="pollen-workers" style="font-weight:bold; color: #d35400;">0</span><br>
+                    ✨ Hand-Bonus: +<span id="pollen-click-bonus" style="color: #d35400;">0</span>
+                </div>
+                <button onclick="addWorkerPollen(event)" style="background:#e67e22; padding: 8px; color: white;">+ Biene zuweisen</button>
+            </div>
+        </div>
+        <div class="plot"></div>
     </div>
 
     <div id="control-panel">
@@ -45,4 +82,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>

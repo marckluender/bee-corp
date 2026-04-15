@@ -1,6 +1,6 @@
-body { background-color: #fdf6e3; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+body { background-color: #fdf6e3; font-family: 'Segoe UI', sans-serif; display: flex; align-items: stretch; height: 100vh; margin: 0; overflow: hidden; }
 
-#village-grid { flex: 2; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 40px; background: #f4ead5; position: relative; }
+#village-grid { flex: 2; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 20px; background: #f4ead5; position: relative; }
 
 #top-alert-bar {
     position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
@@ -10,17 +10,18 @@ body { background-color: #fdf6e3; font-family: 'Segoe UI', sans-serif; display: 
 
 .plot { border: 2px dashed #d3c5a1; border-radius: 15px; background: rgba(255,255,255,0.3); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; }
 
-.building-img { width: 100%; height: auto; border-radius: 10px; display: none; }
+.building-img { width: 100%; height: auto; border-radius: 10px; display: block; }
 
 .building-controls { display: none; flex-direction: column; width: 100%; margin-top: 10px; gap: 5px; }
 
-.placeholder-ui button { background: #27ae60; padding: 10px; border: none; color: white; border-radius: 5px; cursor: pointer; }
+.placeholder-ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: rgba(255,255,255,0.4); border-radius: 10px; }
+.placeholder-ui button { background: #27ae60; padding: 10px; border: none; color: white; border-radius: 5px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
 
 #upgrade-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; color: white; flex-direction: column; align-items: center; justify-content: center; }
 
 .upgrade-card { background: #444; padding: 20px; border-radius: 10px; width: 450px; border-left: 5px solid #27ae60; margin-bottom: 20px; }
 
-#control-panel { flex: 1; background: #3d3d3d; color: white; padding: 30px; border-left: 5px solid #222; display: flex; flex-direction: column; }
+#control-panel { flex: 1; background: #3d3d3d; color: white; padding: 20px 30px; border-left: 5px solid #222; display: flex; flex-direction: column; }
 
 #narrator { background: #555; padding: 20px; border-radius: 10px; font-style: italic; min-height: 100px; border-left: 4px solid #f1c40f; margin-bottom: 20px; cursor: pointer; }
 
