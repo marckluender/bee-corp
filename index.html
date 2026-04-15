@@ -31,7 +31,7 @@
             <div id="wax-controls" class="building-controls">
                 <div class="worker-stats">
                     👷 Bienen: <span id="wax-workers" class="stat-bold">0</span><br>
-                    🏭 Produktion: <span id="wax-auto-prod">0</span>/5s
+                    🍯 Produktion: <span id="wax-auto-prod">0.0</span>/5s
                 </div>
                 <button class="btn-add-worker bg-wax" onclick="addWorkerTo('wax', event)">+ Biene zuweisen</button>
             </div>
@@ -48,7 +48,7 @@
             <div id="nektar-controls" class="building-controls">
                 <div class="worker-stats">
                     👷 Bienen: <span id="nektar-workers" class="stat-bold">0</span><br>
-                    🌸 Produktion: <span id="nektar-auto-prod">0</span>/5s
+                    🌸 Produktion: <span id="nektar-auto-prod">0.0</span>/5s
                 </div>
                 <button class="btn-add-worker bg-nektar" onclick="addWorkerTo('nektar', event)">+ Biene
                     zuweisen</button>
@@ -66,7 +66,7 @@
             <div id="pollen-controls" class="building-controls">
                 <div class="worker-stats">
                     👷 Bienen: <span id="pollen-workers" class="stat-bold">0</span><br>
-                    ✨ Bonus: +<span id="pollen-click-bonus">0</span>
+                    🐝 Rekrutierung: <span id="pollen-prod-val">0.0</span>/10s
                 </div>
                 <button class="btn-add-worker bg-pollen" onclick="addWorkerTo('pollen', event)">+ Biene
                     zuweisen</button>
@@ -86,7 +86,7 @@
         <div id="moderator-name-tag"></div>
 
         <div class="stats-box">
-            <div class="stat-item">🌸 Nektar: <span id="nectar-val" style="display: inline-block;">0</span></div>
+            <div class="stat-item">🌸 Nektar: <span id="nectar-val">0</span></div>
             <div class="stat-item">🍯 Honig: <span id="honey-val">0</span></div>
             <div class="stat-item">🐝 Freie Bienen: <span id="unemployed-val">0</span></div>
             <button id="shop-btn" class="btn-shop" onclick="toggleUpgradeMenu(true)">🛒 Forschungs-Shop</button>

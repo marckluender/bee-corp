@@ -61,6 +61,15 @@ body {
     border-radius: 10px;
 }
 
+/* KORREKTUR: Hintergrund für bessere Lesbarkeit unter den Gebäuden */
+.placeholder-ui {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 8px;
+    border-radius: 8px;
+    margin-top: 5px;
+    text-align: center;
+}
+
 .building-controls {
     display: none;
     flex-direction: column;
@@ -69,11 +78,10 @@ body {
     gap: 5px;
 }
 
-/* Control Panel */
 #control-panel {
     width: 450px;
     box-sizing: border-box;
-    background: #3d3d3d;
+    background: #575757;
     color: white;
     padding: 20px;
     border-left: 5px solid #222;
@@ -108,12 +116,13 @@ body {
     border-radius: 15px;
 }
 
+/* KORREKTUR: Mehr Transparenz für die Textbox (0.4 -> 0.6 für bessere Lesbarkeit des Inhalts bei hoher Transparenz) */
 #narrator-text-box {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(0, 0, 0, 0.4);
     padding: 12px;
     box-sizing: border-box;
     border-bottom-left-radius: 15px;
@@ -139,11 +148,10 @@ body {
     border-radius: 12px;
     font-weight: bold;
     font-size: 1.2rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.55);
     margin-bottom: 30px;
 }
 
-/* Stats Bereich */
 .stats-box {
     width: 100%;
     display: flex;
@@ -162,11 +170,6 @@ body {
     color: #f1c40f;
 }
 
-.stat-item:last-of-type {
-    margin-bottom: 0;
-}
-
-/* Neuer Shop Button */
 .btn-shop {
     background: #8e44ad;
     width: 100%;
@@ -175,6 +178,7 @@ body {
     margin-top: 15px;
     border-bottom: 4px solid #6c3483;
     transition: 0.1s;
+    color: white;
 }
 
 .btn-shop:active {
@@ -182,7 +186,6 @@ body {
     transform: translateY(4px);
 }
 
-/* Overlay */
 #upgrade-overlay {
     display: none;
     position: fixed;
@@ -207,7 +210,15 @@ body {
     width: 90%;
 }
 
-/* Partikel */
+.upgrade-card {
+    background: #444;
+    border-left: 5px solid #7f8c8d;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+    text-align: left;
+}
+
 .particle {
     position: fixed;
     background: #f1c40f;
@@ -215,14 +226,6 @@ body {
     pointer-events: none;
     z-index: 9999;
     box-shadow: 0 0 8px #f1c40f, 0 0 15px #ffffff;
-}
-
-button {
-    border: none;
-    border-radius: 5px;
-    color: white;
-    cursor: pointer;
-    font-weight: bold;
 }
 
 button:disabled {
@@ -235,6 +238,11 @@ button:disabled {
     background: #27ae60;
     padding: 10px;
     width: 100%;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 .btn-back {
@@ -244,10 +252,13 @@ button:disabled {
     color: white;
     margin-top: 20px;
     font-size: 1.1rem;
+    border: none;
+    cursor: pointer;
 }
 
-.highlight-pulse {
-    animation: glow 1.5s infinite;
+.stat-bold {
+    font-weight: bold;
+    color: #2c3e50;
 }
 
 @keyframes glow {
@@ -276,7 +287,6 @@ button:disabled {
     }
 }
 
-/* Spring-Effekt für die Zahlen */
 .stat-jump {
     animation: statPop 0.2s ease-out;
 }

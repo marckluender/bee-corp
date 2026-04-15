@@ -20,7 +20,12 @@ const idleMessages = [
     "Je mehr Nektar im Speicher ist, umso weniger musst du später klicken.",
     "Halb geklickt ist schon halb gewonnen!",
     "Bee, ba dee, BaBee, Babee Babee!",
-    "Hast du schon den Honigvorrat gesehen? Da geht noch was!"
+    "Hast du schon den Honigvorrat gesehen? Da geht noch was!",
+    "Ein paar Bienen mehr könnten hier wirklich nicht schaden. Also... fast so viele wie in meiner Verwandtschaft!",
+    "Summ summ summ... Bienchen klick dich dumm? Nein, klick dich reich!",
+    "Wusstest du, dass Honig quasi flüssiges Gold ist? Nur klebriger. Und leckerer.",
+    "Ich habe gehört, in anderen Stöcken gibt es Gewerkschaften. Aber hier? Hier gibt es... MICH!",
+    "Wenn wir so weitermachen, gehört uns bald der ganze Garten. Oder zumindest der Blumenkasten da vorne."
 ];
 
 // Game State
@@ -64,14 +69,6 @@ function triggerNectarJump() {
 function handleGlobalClick(event) {
     if (tutorialStep < 2) {
         advanceTutorial();
-    }
-    else if (tutorialStep === 2) {
-        if (!event.target.closest('#narrator-container')) {
-            failClicks++;
-            if (failClicks >= 10) {
-                updateNarrator("Nicht so schüchtern! Du musst direkt auf mein Bild klicken!");
-            }
-        }
     }
 }
 
@@ -133,8 +130,7 @@ function manualCollect(event) {
     }
 
     if (tutorialStep >= 2) {
-        let clickPower = 1 + (hasPollenStore ? (pollenWorkers * pollenLevel) : 0);
-        nectar += clickPower;
+        nectar += 1;
         triggerNectarJump();
         updateUI();
     }
@@ -146,21 +142,27 @@ function showNextIdleMessage() {
 }
 
 function startIdleTimer() {
+    if (idleInterval) clearInterval(idleInterval);
     idleInterval = setInterval(() => {
-        if (!hasWaxStore && !hasNektarStore) {
+        if (upgradesSeen) {
             showNextIdleMessage();
-        } else {
-            clearInterval(idleInterval);
-            updateNarrator("");
         }
     }, 20000);
 }
 
 function startProduction() {
-    setInterval(() => { unemployedBees++; updateUI(); }, 10000);
     setInterval(() => {
-        if (hasWaxStore) honey += (1 * (1 + (waxWorkers * 0.01)));
-        if (hasNektarStore) nectar += (1 * (1 + (nektarWorkers * 0.01)));
+        let spawnAmount = 1;
+        if (hasPollenStore) {
+            spawnAmount += (pollenWorkers * 0.05 * pollenLevel);
+        }
+        unemployedBees += spawnAmount;
+        updateUI();
+    }, 10000);
+
+    setInterval(() => {
+        if (hasWaxStore) honey += (waxLevel * (1 + (waxWorkers * 0.01)));
+        if (hasNektarStore) nectar += (nektarLevel * (1 + (nektarWorkers * 0.01)));
         updateUI();
     }, 5000);
     processQueen();
@@ -178,45 +180,42 @@ function processQueen() {
 }
 
 function updateUI() {
-    document.getElementById('nectar-val').innerText = Math.floor(Math.max(0, nectar));
-    document.getElementById('honey-val').innerText = Math.floor(Math.max(0, honey));
-    document.getElementById('unemployed-val').innerText = unemployedBees;
+    document.getElementById('nectar-val').innerText = Math.floor(nectar);
+    document.getElementById('honey-val').innerText = Math.floor(honey);
+    document.getElementById('unemployed-val').innerText = Math.floor(unemployedBees);
 
-    if (hasWaxStore) document.getElementById('wax-workers').innerText = waxWorkers;
-    if (hasNektarStore) document.getElementById('nektar-workers').innerText = nektarWorkers;
+    if (hasWaxStore) {
+        document.getElementById('wax-workers').innerText = waxWorkers;
+        let waxProd = (waxLevel * (1 + (waxWorkers * 0.01)));
+        document.getElementById('wax-auto-prod').innerText = waxProd.toFixed(1);
+    }
+
+    if (hasNektarStore) {
+        document.getElementById('nektar-workers').innerText = nektarWorkers;
+        let nekProd = (nektarLevel * (1 + (nektarWorkers * 0.01)));
+        document.getElementById('nektar-auto-prod').innerText = nekProd.toFixed(1);
+    }
+
     if (hasPollenStore) {
         document.getElementById('pollen-workers').innerText = pollenWorkers;
-        let bonusEl = document.getElementById('pollen-click-bonus');
-        if (bonusEl) bonusEl.innerText = (pollenWorkers * pollenLevel);
+        let pollenBonus = (1 + (pollenWorkers * 0.05 * pollenLevel));
+        document.getElementById('pollen-prod-val').innerText = pollenBonus.toFixed(1);
     }
 
     let totalWorkers = waxWorkers + nektarWorkers + pollenWorkers;
-
-    let waxBtn = document.getElementById('buy-btn');
-    if (waxBtn) waxBtn.disabled = (tutorialStep < 2 || honey < 25);
-
-    let nektarBtn = document.getElementById('buy-nektar-btn');
-    if (nektarBtn) nektarBtn.disabled = (tutorialStep < 2 || honey < 25);
-
-    let canBuyPollen = (honey >= 250 && totalWorkers >= 50);
-    let pollenBtn = document.getElementById('buy-pollen-btn');
-    if (pollenBtn) pollenBtn.disabled = (tutorialStep < 2 || !canBuyPollen);
+    if (document.getElementById('buy-btn')) document.getElementById('buy-btn').disabled = (honey < 25);
+    if (document.getElementById('buy-nektar-btn')) document.getElementById('buy-nektar-btn').disabled = (honey < 25);
+    if (document.getElementById('buy-pollen-btn')) document.getElementById('buy-pollen-btn').disabled = (honey < 250 || totalWorkers < 50);
 
     let plotPollen = document.getElementById('plot-pollen');
-    if (plotPollen) {
-        plotPollen.style.display = (totalWorkers >= 50 || hasPollenStore) ? 'flex' : 'none';
-    }
+    if (plotPollen) plotPollen.style.display = (totalWorkers >= 50 || hasPollenStore) ? 'flex' : 'none';
 
-    // Banner-Logik
     let showWaxUpgrade = hasWaxStore && waxLevel < 5 && totalWorkers >= workerMilestones[waxLevel + 1];
     let showNektarUpgrade = hasNektarStore && nektarLevel < 5 && totalWorkers >= workerMilestones[nektarLevel + 1];
     let showPollenUpgrade = hasPollenStore && pollenLevel < 5 && totalWorkers >= workerMilestones[pollenLevel + 1];
 
     let currentAvailable = (showWaxUpgrade ? 1 : 0) + (showNektarUpgrade ? 1 : 0) + (showPollenUpgrade ? 1 : 0);
-
-    if (currentAvailable > lastUpgradeCount) {
-        upgradesSeen = false;
-    }
+    if (currentAvailable > lastUpgradeCount) upgradesSeen = false;
     lastUpgradeCount = currentAvailable;
 
     let alertBar = document.getElementById('top-alert-bar');
@@ -225,32 +224,27 @@ function updateUI() {
 
 function buyStore(type, event) {
     if (event) event.stopPropagation();
-    let totalWorkers = waxWorkers + nektarWorkers + pollenWorkers;
-
     if (type === 'wax' && honey >= 25) {
         honey -= 25; hasWaxStore = true;
         document.getElementById('wax-placeholder').style.visibility = 'hidden';
         document.getElementById('wax-img').src = 'gfx/wax_1.png';
         document.getElementById('wax-controls').style.display = 'flex';
-        updateNarrator("");
     } else if (type === 'nektar' && honey >= 25) {
         honey -= 25; hasNektarStore = true;
         document.getElementById('nektar-placeholder').style.visibility = 'hidden';
         document.getElementById('nektar-img').src = 'gfx/nektar_1.png';
         document.getElementById('nektar-controls').style.display = 'flex';
-        updateNarrator("");
-    } else if (type === 'pollen' && honey >= 250 && totalWorkers >= 50) {
+    } else if (type === 'pollen' && honey >= 250) {
         honey -= 250; hasPollenStore = true;
         document.getElementById('pollen-placeholder').style.visibility = 'hidden';
         document.getElementById('pollen-controls').style.display = 'flex';
-        updateNarrator("Stark! Die Pollenakademie kurbelt die Handbestäubung ordentlich an!");
     }
     updateUI();
 }
 
 function addWorkerTo(type, event) {
     if (event) event.stopPropagation();
-    if (unemployedBees > 0) {
+    if (unemployedBees >= 1) {
         unemployedBees--;
         if (type === 'wax') waxWorkers++;
         if (type === 'nektar') nektarWorkers++;
@@ -274,41 +268,49 @@ function renderUpgrades() {
     list.innerHTML = "";
 
     let totalWorkers = waxWorkers + nektarWorkers + pollenWorkers;
-    let itemsAdded = 0; // Hilfsvariable, um zu prüfen ob der Shop komplett leer ist
+    let itemsAdded = 0;
 
-    // Gekaufte Maximal-Level (Level 5) werden hier komplett ignoriert und verschwinden aus dem Shop
+    // KORREKTUR: Detaillierte Effekt-Beschreibungen für den Shop
     if (hasWaxStore && waxLevel < 5) {
-        let nextWax = waxLevel + 1;
-        if (totalWorkers >= workerMilestones[nextWax]) {
-            list.innerHTML += `<div class="upgrade-card" style="border-left-color: #27ae60;"><h3>WaxStore Level ${nextWax}</h3><p>Tempo Königin: -50% | Höhere Eigenproduktion.</p><button onclick="executeUpgrade('wax', ${upgradeCosts[nextWax]})" ${(honey < upgradeCosts[nextWax]) ? 'disabled' : ''} style="background:#27ae60; padding:12px; width:100%; border:none; border-radius:5px; color:white; cursor:pointer;">Kaufen für ${upgradeCosts[nextWax].toLocaleString()} 🍯</button></div>`;
-        } else {
-            list.innerHTML += `<div class="upgrade-card" style="border-left-color: #7f8c8d;"><h3>WaxStore Lvl ${nextWax} gesperrt</h3><p>Benötigt ${workerMilestones[nextWax]} Bienen insgesamt.</p></div>`;
-        }
+        let nextLvl = waxLevel + 1;
+        let canBuy = totalWorkers >= workerMilestones[nextLvl];
+        let currentInterval = (5 * Math.pow(0.5, waxLevel)).toFixed(2);
+        let nextInterval = (5 * Math.pow(0.5, nextLvl)).toFixed(2);
+
+        list.innerHTML += `<div class="upgrade-card" style="border-left-color: ${canBuy ? '#27ae60' : '#7f8c8d'};">
+            <h3>WaxStore Level ${nextLvl}</h3>
+            <p>Effekt: Königin-Intervall reduziert von ${currentInterval}s auf ${nextInterval}s.<br>Honig-Grundwert steigt von x${waxLevel} auf x${nextLvl}.</p>
+            <button onclick="executeUpgrade('wax', ${upgradeCosts[nextLvl]})" ${(!canBuy || honey < upgradeCosts[nextLvl]) ? 'disabled' : ''}>Kaufen (${upgradeCosts[nextLvl]} 🍯)</button>
+        </div>`;
         itemsAdded++;
     }
 
     if (hasNektarStore && nektarLevel < 5) {
-        let nextNek = nektarLevel + 1;
-        if (totalWorkers >= workerMilestones[nextNek]) {
-            list.innerHTML += `<div class="upgrade-card" style="border-left-color: #9b59b6;"><h3>NektarStore Level ${nextNek}</h3><p>Höhere Nektar-Produktion!</p><button onclick="executeUpgrade('nektar', ${upgradeCosts[nextNek]})" ${(honey < upgradeCosts[nextNek]) ? 'disabled' : ''} style="background:#9b59b6; padding:12px; width:100%; border:none; border-radius:5px; color:white; cursor:pointer;">Kaufen für ${upgradeCosts[nextNek].toLocaleString()} 🍯</button></div>`;
-        } else {
-            list.innerHTML += `<div class="upgrade-card" style="border-left-color: #7f8c8d;"><h3>NektarStore Lvl ${nextNek} gesperrt</h3><p>Benötigt ${workerMilestones[nextNek]} Bienen insgesamt.</p></div>`;
-        }
+        let nextLvl = nektarLevel + 1;
+        let canBuy = totalWorkers >= workerMilestones[nextLvl];
+
+        list.innerHTML += `<div class="upgrade-card" style="border-left-color: ${canBuy ? '#9b59b6' : '#7f8c8d'};">
+            <h3>NektarStore Level ${nextLvl}</h3>
+            <p>Effekt: Nektar-Eigenproduktion wird von x${nektarLevel} auf x${nextLvl} verstärkt.</p>
+            <button onclick="executeUpgrade('nektar', ${upgradeCosts[nextLvl]})" ${(!canBuy || honey < upgradeCosts[nextLvl]) ? 'disabled' : ''}>Kaufen (${upgradeCosts[nextLvl]} 🍯)</button>
+        </div>`;
         itemsAdded++;
     }
 
     if (hasPollenStore && pollenLevel < 5) {
-        let nextPol = pollenLevel + 1;
-        if (totalWorkers >= workerMilestones[nextPol]) {
-            list.innerHTML += `<div class="upgrade-card" style="border-left-color: #e67e22;"><h3>Pollenakademie Level ${nextPol}</h3><p>Größerer Handbestäubungs-Bonus!</p><button onclick="executeUpgrade('pollen', ${upgradeCosts[nextPol]})" ${(honey < upgradeCosts[nextPol]) ? 'disabled' : ''} style="background:#e67e22; padding:12px; width:100%; border:none; border-radius:5px; color:white; cursor:pointer;">Kaufen für ${upgradeCosts[nextPol].toLocaleString()} 🍯</button></div>`;
-        } else {
-            list.innerHTML += `<div class="upgrade-card" style="border-left-color: #7f8c8d;"><h3>Pollenakademie Lvl ${nextPol} gesperrt</h3><p>Benötigt ${workerMilestones[nextPol]} Bienen insgesamt.</p></div>`;
-        }
+        let nextLvl = pollenLevel + 1;
+        let canBuy = totalWorkers >= workerMilestones[nextLvl];
+
+        list.innerHTML += `<div class="upgrade-card" style="border-left-color: ${canBuy ? '#e67e22' : '#7f8c8d'};">
+            <h3>Pollenakademie Level ${nextLvl}</h3>
+            <p>Effekt: Rekrutierungs-Multiplikator für Arbeiter-Bienen steigt von x${pollenLevel} auf x${nextLvl}.</p>
+            <button onclick="executeUpgrade('pollen', ${upgradeCosts[nextLvl]})" ${(!canBuy || honey < upgradeCosts[nextLvl]) ? 'disabled' : ''}>Kaufen (${upgradeCosts[nextLvl]} 🍯)</button>
+        </div>`;
         itemsAdded++;
     }
 
-    if (itemsAdded === 0 && (hasWaxStore || hasNektarStore || hasPollenStore)) {
-        list.innerHTML = `<p style="color:#bdc3c7; font-style:italic;">Du hast aktuell das Maximum an Wissen erforscht!</p>`;
+    if (itemsAdded === 0) {
+        list.innerHTML = `<p style="color:#bdc3c7; font-style:italic;">Aktuell sind keine weiteren Forschungen verfügbar.</p>`;
     }
 }
 
