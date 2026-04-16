@@ -1,16 +1,14 @@
 /* Grund-Reset */
-/* Verhindert das Markieren von Text und Bildern im gesamten Spiel */
 body {
-    -webkit-user-select: none; /* Safari */
-    -ms-user-select: none;     /* IE 10 und älter */
-    user-select: none;         /* Standard (Chrome, Firefox, Edge) */
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
-/* Verhindert das blaue Aufleuchten und das Ziehen von Bildern */
 img {
     -webkit-user-drag: none;
     -user-drag: none;
-    -webkit-tap-highlight-color: transparent; /* Verhindert das Aufleuchten auf Handys */
+    -webkit-tap-highlight-color: transparent;
 }
 
 * {
@@ -49,21 +47,24 @@ body {
     box-shadow: 0 0 100px rgba(0,0,0,0.8);
 }
 
-/* Basis für alle absolut positionierten Elemente */
-.slot, .ui-sidebar {
+/* Basis für alle Gebäude-Slots */
+.slot {
     position: absolute;
     display: flex;
     flex-direction: column;
     align-items: center;
+    /* Wir zentrieren den Inhalt vertikal, damit das Bild auf der Koordinate sitzt */
+    justify-content: center; 
 }
 
 .slot img {
     width: 100%;    
     height: auto;   
-    display: block; 
+    display: block;
+    /* Sorgt dafür, dass das Bild die Position definiert */
 }
 
-/* Deine exakten Positionswerte aus der funktionierenden Version */
+/* Deine exakten Positionswerte */
 .slot-1 { top: 11%; left: 32%; width: 10%; }
 .slot-2 { top: 31%; left: 70%; width: 10%; }
 .slot-3 { top: 61%; left: 34%; width: 10%; }
@@ -71,30 +72,40 @@ body {
 .slot-5 { top: 30%; left: 17%; width: 10%; }
 .slot-6 { top: 60%; left: 59%; width: 10%; }
 
+/* Styling der Kauf-Buttons (Labels) */
 .label {
-    background: #27ae60;
+    background: #7f8c8d;
     color: white;
-    padding: 5px 10px;
+    padding: 5px 12px;
     border-radius: 10px;
     font-size: 0.8rem;
-    margin-top: -10px;
     white-space: nowrap;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.2);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    cursor: default;
+    
+    /* POSITIONIERUNG: */
+    position: absolute;
+    bottom: -40px; /* Weiter nach unten geschoben */
+    z-index: 10;
 }
 
-/* UI Sidebar Bereich rechts - Jetzt bündig optimiert */
+/* UI Sidebar Bereich rechts */
 .ui-sidebar {
-    top: 10%; /* Etwas höher für mehr Platz */
+    position: absolute;
+    top: 10%;
     right: 2%;
     width: 15%;
     display: flex;
     flex-direction: column;
     gap: 12px;
-    align-items: stretch; /* Zwingt alle Boxen auf die gleiche Breite */
+    align-items: stretch;
 }
 
 .bee-character img {
-    width: 100%; /* Korrigiert von 10% auf 100% */
-    border: 3px solid #f1c40f;
+    width: 100%;
+    border: 0px solid #f1c40f;
     border-radius: 15px;
 }
 
@@ -102,6 +113,7 @@ body {
     background: rgba(0, 0, 0, 0.7);
     color: #f1c40f;
     padding: 12px;
+    height: 80px;
     border-radius: 15px;
     border: 2px solid #f1c40f;
     font-size: 0.9rem;
@@ -129,17 +141,7 @@ body {
     font-weight: bold;
 }
 
-/* Feedback beim Klicken auf BeeBabaluga */
-#bee-generator {
-    cursor: pointer;
-    transition: transform 0.1s active;
-}
-
-#bee-generator:active {
-    transform: scale(0.95); /* Kleiner "Druck"-Effekt */
-}
-
-    /* Animation für den Upgrade-Banner */
+/* Animation für den Upgrade-Banner */
 .upgrade-notification {
     position: absolute;
     top: -60px;
@@ -170,4 +172,57 @@ body {
 
 #bee-generator:active {
     transform: scale(0.92);
+}
+
+/* Modal Styling */
+.modal-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 2000;
+}
+.modal-window {
+    background: #2c3e50;
+    border: 3px solid #f1c40f;
+    border-radius: 20px;
+    padding: 20px;
+    min-width: 250px;
+    text-align: center;
+    color: white;
+}
+.modal-actions {
+    display: flex; flex-direction: column; gap: 10px; margin: 20px 0;
+}
+.modal-actions button {
+    background: #f1c40f; border: none; padding: 10px; border-radius: 5px;
+    font-weight: bold; cursor: pointer;
+}
+.upgrade-btn { background: #e67e22 !important; color: white; }
+.close-modal { background: #c0392b; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+
+/* Suche .fullscreen-btn in deiner CSS oder füge es neu hinzu */
+.fullscreen-btn {
+    background: rgba(0, 0, 0, 0.7);
+    color: #f1c40f;
+    border: 2px solid #f1c40f;
+    padding: 10px;
+    width: 100%; /* Nimmt die volle Breite der Sidebar ein */
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 10px; /* Abstand zur Biene darunter */
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+.fullscreen-btn:hover {
+    background: #f1c40f;
+    color: #1a1a1a;
+    transform: translateY(-2px);
+}
+
+.fullscreen-btn:active {
+    transform: translateY(0);
 }

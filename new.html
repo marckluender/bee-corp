@@ -11,16 +11,17 @@
         <div class="game-container">
             <div id="upgrade-alert" class="upgrade-notification">Upgrade verfügbar! 🚀</div>
 
-            <div class="slot slot-1" id="slot-1"><img src="gfx/wax_1.png" alt="1"><div class="label" id="label-1">Laden 1</div></div>
-            <div class="slot slot-2" id="slot-2"><img src="gfx/nektar_1.png" alt="2"><div class="label" id="label-2">Laden 2</div></div>
-            <div class="slot slot-3" id="slot-3"><img src="gfx/wax_1.png" alt="3"><div class="label" id="label-3">Laden 3</div></div>
-            <div class="slot slot-4" id="slot-4"><img src="gfx/wax_1.png" alt="4"><div class="label" id="label-4">Laden 4</div></div>
-            <div class="slot slot-5" id="slot-5"><img src="gfx/wax_1.png" alt="5"><div class="label" id="label-5">Laden 5</div></div>
-            <div class="slot slot-6" id="slot-6"><img src="gfx/wax_1.png" alt="6"><div class="label" id="label-6">Laden 6</div></div>
+            <div class="slot slot-1" id="slot-1"><img src="gfx/wax1.png" alt="1"><div class="label" id="label-1">Laden 1</div></div>
+            <div class="slot slot-2" id="slot-2"><img src="gfx/wax3.png" alt="2"><div class="label" id="label-2">Laden 2</div></div>
+            <div class="slot slot-3" id="slot-3"><img src="gfx/wax2.png" alt="3"><div class="label" id="label-3">Laden 3</div></div>
+            <div class="slot slot-4" id="slot-4"><img src="gfx/wax3.png" alt="4"><div class="label" id="label-4">Laden 4</div></div>
+            <div class="slot slot-5" id="slot-5"><img src="gfx/wax4.png" alt="5"><div class="label" id="label-5">Laden 5</div></div>
+            <div class="slot slot-6" id="slot-6"><img src="gfx/wax5.png" alt="6"><div class="label" id="label-6">Laden 6</div></div>
 
             <div class="ui-sidebar">
+                <button class="fullscreen-btn" onclick="toggleFullscreen()">🖥️ Vollbild</button>
                 <div class="bee-character" id="bee-generator">
-                    <img src="gfx/BeeBabaluga.png" alt="BeeBabaluga">
+                    <img src="gfx/beebaba.png" alt="BeeBabaluga">
                 </div>
                 <div class="message-box"><p id="bee-message">Hallo!</p></div>
                 <div class="stats-box">
@@ -31,9 +32,23 @@
                     </ul>
                     <button class="shop-btn" id="shop-trigger">Forschungs-Shop</button>
                 </div>
+                
             </div>
+            <div id="building-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-window">
+            <h3 id="modal-title">Gebäude Name</h3>
+            <div id="modal-content">
+                </div>
+            <button class="close-modal" onclick="BuildingUI.closeMenu()">Schließen</button>
+        </div>
+</div>
         </div>
     </div>
     <script src="newscript.js"></script>
+    <link rel="stylesheet" href="tutorial.css">
+
+<script src="newscript.js"></script>
+<script src="story.js"></script>
+<script src="buildingUI.js"></script>
 </body>
 </html>
