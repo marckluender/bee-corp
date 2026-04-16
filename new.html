@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bee-Corp: Masterplan</title>
+    <link rel="stylesheet" href="newstyle.css">
+</head>
+<body>
+    <div class="game-wrapper">
+        <div class="game-container">
+            <div id="upgrade-alert" class="upgrade-notification">Upgrade verfügbar! 🚀</div>
+
+            <div class="slot slot-1" id="slot-1"><img src="gfx/wax_1.png" alt="1"><div class="label" id="label-1">Laden 1</div></div>
+            <div class="slot slot-2" id="slot-2"><img src="gfx/nektar_1.png" alt="2"><div class="label" id="label-2">Laden 2</div></div>
+            <div class="slot slot-3" id="slot-3"><img src="gfx/wax_1.png" alt="3"><div class="label" id="label-3">Laden 3</div></div>
+            <div class="slot slot-4" id="slot-4"><img src="gfx/wax_1.png" alt="4"><div class="label" id="label-4">Laden 4</div></div>
+            <div class="slot slot-5" id="slot-5"><img src="gfx/wax_1.png" alt="5"><div class="label" id="label-5">Laden 5</div></div>
+            <div class="slot slot-6" id="slot-6"><img src="gfx/wax_1.png" alt="6"><div class="label" id="label-6">Laden 6</div></div>
+
+            <div class="ui-sidebar">
+                <div class="bee-character" id="bee-generator">
+                    <img src="gfx/BeeBabaluga.png" alt="BeeBabaluga">
+                </div>
+                <div class="message-box"><p id="bee-message">Hallo!</p></div>
+                <div class="stats-box">
+                    <ul>
+                        <li>🌸 Nektar: <span id="stat-nektar">0</span></li>
+                        <li>🍯 Honig: <span id="stat-honig">0</span></li>
+                        <li>🐝 Bienen: <span id="stat-bienen">0</span></li>
+                    </ul>
+                    <button class="shop-btn" id="shop-trigger">Forschungs-Shop</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="newscript.js"></script>
+</body>
+</html>

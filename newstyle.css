@@ -1,0 +1,173 @@
+/* Grund-Reset */
+/* Verhindert das Markieren von Text und Bildern im gesamten Spiel */
+body {
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none;     /* IE 10 und älter */
+    user-select: none;         /* Standard (Chrome, Firefox, Edge) */
+}
+
+/* Verhindert das blaue Aufleuchten und das Ziehen von Bildern */
+img {
+    -webkit-user-drag: none;
+    -user-drag: none;
+    -webkit-tap-highlight-color: transparent; /* Verhindert das Aufleuchten auf Handys */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #1a1a1a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    font-family: 'Arial', sans-serif;
+    overflow: hidden;
+}
+
+.game-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-container {
+    width: 100%;
+    max-width: 1600px;
+    aspect-ratio: 16 / 9;
+    position: relative;
+    background-image: url('gfx/game.jpg'); 
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 0 100px rgba(0,0,0,0.8);
+}
+
+/* Basis für alle absolut positionierten Elemente */
+.slot, .ui-sidebar {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.slot img {
+    width: 100%;    
+    height: auto;   
+    display: block; 
+}
+
+/* Deine exakten Positionswerte aus der funktionierenden Version */
+.slot-1 { top: 11%; left: 32%; width: 10%; }
+.slot-2 { top: 31%; left: 70%; width: 10%; }
+.slot-3 { top: 61%; left: 34%; width: 10%; }
+.slot-4 { top: 9%;  left: 53%; width: 10%; }
+.slot-5 { top: 30%; left: 17%; width: 10%; }
+.slot-6 { top: 60%; left: 59%; width: 10%; }
+
+.label {
+    background: #27ae60;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    margin-top: -10px;
+    white-space: nowrap;
+}
+
+/* UI Sidebar Bereich rechts - Jetzt bündig optimiert */
+.ui-sidebar {
+    top: 10%; /* Etwas höher für mehr Platz */
+    right: 2%;
+    width: 15%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch; /* Zwingt alle Boxen auf die gleiche Breite */
+}
+
+.bee-character img {
+    width: 100%; /* Korrigiert von 10% auf 100% */
+    border: 3px solid #f1c40f;
+    border-radius: 15px;
+}
+
+.message-box {
+    background: rgba(0, 0, 0, 0.7);
+    color: #f1c40f;
+    padding: 12px;
+    border-radius: 15px;
+    border: 2px solid #f1c40f;
+    font-size: 0.9rem;
+}
+
+.stats-box {
+    background: rgba(0, 0, 0, 0.8);
+    color: #f1c40f;
+    padding: 15px;
+    border-radius: 15px;
+    border: 2px solid #f1c40f;
+}
+
+.stats-box ul { list-style: none; }
+.stats-box li { margin-bottom: 8px; font-weight: bold; }
+
+.shop-btn {
+    background: #8e44ad;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* Feedback beim Klicken auf BeeBabaluga */
+#bee-generator {
+    cursor: pointer;
+    transition: transform 0.1s active;
+}
+
+#bee-generator:active {
+    transform: scale(0.95); /* Kleiner "Druck"-Effekt */
+}
+
+    /* Animation für den Upgrade-Banner */
+.upgrade-notification {
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #f1c40f;
+    color: #1a1a1a;
+    padding: 12px 30px;
+    border-radius: 0 0 20px 20px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    z-index: 1000;
+    transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    border: 2px solid #000;
+    border-top: none;
+}
+
+.upgrade-notification.show {
+    top: 0;
+}
+
+/* BeeBabaluga Interaktion */
+#bee-generator {
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+#bee-generator:active {
+    transform: scale(0.92);
+}
