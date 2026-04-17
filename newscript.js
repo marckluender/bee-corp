@@ -69,8 +69,6 @@ const UI = {
             if (GameData.buildings[key]) {
                 if(img) img.style.display = "block";
                 if(label) label.style.display = "none";
-                
-                // NEU: Idle-Animation hinzufügen
                 slotElement.classList.add('idle-pump'); 
             } else {
                 if(img) img.style.display = "none";
@@ -104,8 +102,25 @@ const UI = {
         const slotElement = document.getElementById(`slot-${slotNr}`);
         if (slotElement && GameData.buildings[`slot${slotNr}`]) {
             slotElement.classList.remove('active-pump'); 
-            void slotElement.offsetWidth; // Reflow erzwingen
+            void slotElement.offsetWidth; 
             slotElement.classList.add('active-pump');
+
+            // --- Icon-Mapping (Emojis aus den Stats) ---
+            let iconSymbol = "";
+            if (slotNr === 1) iconSymbol = "🍯"; // WaxStore produziert Honig
+            if (slotNr === 2) iconSymbol = "🌸"; // NektarStore produziert Nektar
+            if (slotNr === 3) iconSymbol = "🐝"; // Store 3 produziert Bienen
+
+            if (iconSymbol) {
+                const floatingIcon = document.createElement('span');
+                floatingIcon.innerText = iconSymbol;
+                floatingIcon.className = 'floating-spawn-icon';
+                slotElement.appendChild(floatingIcon);
+                
+                setTimeout(() => {
+                    floatingIcon.remove();
+                }, 1000);
+            }
             
             setTimeout(() => {
                 slotElement.classList.remove('active-pump');
@@ -147,8 +162,6 @@ function startHoneyProduction() {
             UI.updateStat('nektar', GameData.stats.nektar);
             UI.updateStat('honig', GameData.stats.honig);
             UI.refreshBuildings();
-            
-            // NEU: Animation bei Lieferung
             if (GameData.buildings.slot1) UI.triggerPump(1);
         }
         startHoneyProduction();
@@ -162,8 +175,6 @@ function startNectarProduction() {
         GameData.stats.nektar += bonusFactor;
         UI.updateStat('nektar', GameData.stats.nektar);
         UI.refreshBuildings();
-        
-        // NEU: Animation bei Lieferung
         UI.triggerPump(2);
     }
     setTimeout(startNectarProduction, 10000);
@@ -179,10 +190,7 @@ function startBeeProduction() {
     setTimeout(() => {
         GameData.stats.bienen++;
         UI.updateStat('bienen', GameData.stats.bienen);
-        
-        // NEU: Animation bei Lieferung
         if (GameData.buildings.slot3) UI.triggerPump(3);
-        
         startBeeProduction();
     }, finalTime);
 }
@@ -198,7 +206,6 @@ for (let i = 1; i <= 6; i++) {
         slotElement.onclick = () => {
             const key = `slot${i}`;
             const price = GameData.prices[key];
-            
             if (!GameData.buildings[key] && GameData.stats.honig >= price) {
                 GameData.stats.honig -= price;
                 GameData.buildings[key] = true;
