@@ -249,3 +249,28 @@ body {
     color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; 
     font-weight: bold;
 }
+/* ... (Dein restlicher Code bleibt oben unverändert) ... */
+
+/* --- GEBÄUDE ANIMATIONEN --- */
+
+/* Permanentes leichtes Atmen für aktive Gebäude */
+.idle-pump {
+    animation: building-breath 3s ease-in-out infinite;
+}
+
+@keyframes building-breath {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+}
+
+/* Der kräftige Sprung bei Rohstoff-Lieferung */
+.active-pump {
+    animation: building-jump 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    z-index: 100;
+}
+
+@keyframes building-jump {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.2) translateY(-10px); }
+    100% { transform: scale(1); }
+}

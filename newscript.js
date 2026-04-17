@@ -70,7 +70,7 @@ const UI = {
                 if(img) img.style.display = "block";
                 if(label) label.style.display = "none";
                 
-                // NEU: Idle-Animation hinzufügen, sobald gebaut
+                // NEU: Idle-Animation hinzufügen
                 slotElement.classList.add('idle-pump'); 
             } else {
                 if(img) img.style.display = "none";
@@ -100,15 +100,13 @@ const UI = {
         }
     },
 
-    // NEU: Funktion für das starke Aufpumpen bei Ressourcen-Lieferung
     triggerPump: (slotNr) => {
         const slotElement = document.getElementById(`slot-${slotNr}`);
         if (slotElement && GameData.buildings[`slot${slotNr}`]) {
             slotElement.classList.remove('active-pump'); 
-            void slotElement.offsetWidth; // Reflow erzwingen, um Animation sauber neu zu starten
+            void slotElement.offsetWidth; // Reflow erzwingen
             slotElement.classList.add('active-pump');
             
-            // Nach 300ms die Klasse wieder entfernen, damit sie beim nächsten Mal wieder bereit ist
             setTimeout(() => {
                 slotElement.classList.remove('active-pump');
             }, 300);
@@ -136,7 +134,6 @@ Object.keys(GameData.labels).forEach((key, index) => {
 });
 UI.refreshBuildings(); 
 
-// Zeitintervalle MIT Animations-Trigger
 function startHoneyProduction() {
     let baseTime = 5000; 
     if (GameData.buildings.slot1) baseTime = 2500; 
@@ -151,7 +148,7 @@ function startHoneyProduction() {
             UI.updateStat('honig', GameData.stats.honig);
             UI.refreshBuildings();
             
-            // NEU: Gebäude 1 (WaxStore) pumpt!
+            // NEU: Animation bei Lieferung
             if (GameData.buildings.slot1) UI.triggerPump(1);
         }
         startHoneyProduction();
@@ -166,7 +163,7 @@ function startNectarProduction() {
         UI.updateStat('nektar', GameData.stats.nektar);
         UI.refreshBuildings();
         
-        // NEU: Gebäude 2 (NektarStore) pumpt!
+        // NEU: Animation bei Lieferung
         UI.triggerPump(2);
     }
     setTimeout(startNectarProduction, 10000);
@@ -183,7 +180,7 @@ function startBeeProduction() {
         GameData.stats.bienen++;
         UI.updateStat('bienen', GameData.stats.bienen);
         
-        // NEU: Gebäude 3 pumpt!
+        // NEU: Animation bei Lieferung
         if (GameData.buildings.slot3) UI.triggerPump(3);
         
         startBeeProduction();
