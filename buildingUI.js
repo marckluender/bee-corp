@@ -1,4 +1,5 @@
-const BuildingUI = {
+// buildingUI.js
+window.BuildingUI = {
     activeSlot: null,
     workers: {
         slot1: 0, slot2: 0, slot3: 0, slot4: 0, slot5: 0, slot6: 0
@@ -31,7 +32,6 @@ const BuildingUI = {
         let bonusInfo = "";
         let upgradeButton = "";
 
-        // Bonus-Berechnungen
         if (slotNr === 1) { 
             const timeBonus = (currentWorkers * 0.1).toFixed(1);
             bonusInfo = `<div style="color: #2ecc71; margin-bottom: 10px;">Zeitgewinn: +${timeBonus}%</div>`;
@@ -43,7 +43,6 @@ const BuildingUI = {
             bonusInfo = `<div style="color: #2ecc71; margin-bottom: 10px;">Geburtsrate-Bonus: +${beeBonus}%</div>`;
         }
 
-        // NEU: Wohnraum-Upgrade Button (wenn voll)
         if (housingLevel === 0 && currentWorkers >= maxWorkers) {
             upgradeButton = `
                 <button class="upgrade-btn" onclick="BuildingUI.upgradeHousing()">
@@ -82,7 +81,6 @@ const BuildingUI = {
         const slotKey = `slot${this.activeSlot}`;
         const maxLimit = GameData.housing[slotKey].maxWorkers;
         
-        // NEU: Kapazitätsprüfung
         if (this.workers[slotKey] + amount > maxLimit) {
             UI.setMessage("Wohnraum voll! Erweitere das Gebäude.");
             return;
@@ -91,7 +89,6 @@ const BuildingUI = {
         if (GameData.stats.bienen >= amount) {
             GameData.stats.bienen -= amount;
             this.workers[slotKey] += amount;
-            
             UI.updateStat('bienen', GameData.stats.bienen);
             this.renderContent(this.activeSlot);
             UI.setMessage(`${amount} Biene(n) zugewiesen!`);
@@ -100,7 +97,6 @@ const BuildingUI = {
         }
     },
 
-    // NEU: Housing Upgrade Logik
     upgradeHousing() {
         const slotKey = `slot${this.activeSlot}`;
         const price = GameData.prices.housingUpgrade;
@@ -109,7 +105,6 @@ const BuildingUI = {
             GameData.stats.honig -= price;
             GameData.housing[slotKey].maxWorkers = 50;
             GameData.housing[slotKey].level = 1;
-
             UI.updateStat('honig', GameData.stats.honig);
             this.renderContent(this.activeSlot);
             UI.setMessage("Wohnraum auf 50 Plätze erweitert!");
