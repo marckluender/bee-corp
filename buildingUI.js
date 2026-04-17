@@ -15,49 +15,40 @@ window.BuildingUI = {
                 }
             });
         }
-        
         const modal = document.getElementById('building-modal');
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) this.closeMenu();
-        });
+        modal.addEventListener('click', (e) => { if (e.target === modal) this.closeMenu(); });
     },
 
     renderContent(slotNr) {
         const slotKey = `slot${slotNr}`;
         const currentWorkers = this.workers[slotKey];
-        const maxWorkers = GameData.housing[slotKey].maxWorkers;
-        const housingLevel = GameData.housing[slotKey].level;
-        
+        const housing = GameData.housing[slotKey];
         const content = document.getElementById('modal-content');
-        let bonusInfo = "";
+        
+        let bonusVal = (currentWorkers * 0.1);
+        if (housing.level >= 2) bonusVal += 10;
+        
         let upgradeButton = "";
 
-        if (slotNr === 1) { 
-            const timeBonus = (currentWorkers * 0.1).toFixed(1);
-            bonusInfo = `<div style="color: #2ecc71; margin-bottom: 10px;">Zeitgewinn: +${timeBonus}%</div>`;
-        } else if (slotNr === 2) { 
-            const nectarBonus = (currentWorkers * 0.1).toFixed(1);
-            bonusInfo = `<div style="color: #2ecc71; margin-bottom: 10px;">Nektar-Bonus: +${nectarBonus}%</div>`;
-        } else if (slotNr === 3) {
-            const beeBonus = (currentWorkers * 0.1).toFixed(1);
-            bonusInfo = `<div style="color: #2ecc71; margin-bottom: 10px;">Geburtsrate-Bonus: +${beeBonus}%</div>`;
-        }
-
-        if (housingLevel === 0 && currentWorkers >= maxWorkers) {
+        // Upgrade-Logik: Erst Wohnraum (10->50), dann Gebäude-Level (1->2)
+        if (housing.level === 0 && currentWorkers >= 10) {
+            upgradeButton = `<button class="upgrade-btn" onclick="BuildingUI.upgradeHousing()">Wohnraum erweitern (50 🍯)</button>`;
+        } else if (housing.level === 1 && currentWorkers >= 50) {
             upgradeButton = `
-                <button class="upgrade-btn" onclick="BuildingUI.upgradeHousing()">
-                    Wohnraum erweitern (${GameData.prices.housingUpgrade} 🍯)
+                <button class="upgrade-btn" style="background: #9b59b6 !important;" onclick="BuildingUI.upgradeBuilding()">
+                    Gebäude-Upgrade (25 🍯)
                 </button>`;
         }
 
         content.innerHTML = `
+            <div style="margin-bottom: 5px; font-size: 0.9rem; color: #bdc3c7;">Status: Level ${housing.level}</div>
             <div style="margin-bottom: 10px; font-size: 1.1rem; color: #f1c40f;">
-                Arbeiter: <strong>${currentWorkers} / ${maxWorkers}</strong> 🐝
+                Belegschaft: <strong>${currentWorkers} / ${housing.maxWorkers}</strong> 🐝
             </div>
-            ${bonusInfo}
+            <div style="color: #2ecc71; margin-bottom: 10px;">Effizienz-Bonus: +${bonusVal.toFixed(1)}%</div>
             <div class="modal-actions">
-                <button onclick="BuildingUI.hire(1)">+1 Biene zuweisen</button>
-                <button onclick="BuildingUI.hire(10)">+10 Bienen zuweisen</button>
+                <button onclick="BuildingUI.hire(1)">+1 Arbeiter</button>
+                <button onclick="BuildingUI.hire(10)">+10 Arbeiter</button>
                 ${upgradeButton}
             </div>
         `;
@@ -65,11 +56,10 @@ window.BuildingUI = {
 
     openMenu(slotNr) {
         this.activeSlot = slotNr;
-        const modal = document.getElementById('building-modal');
         const title = document.getElementById('modal-title');
         title.innerText = GameData.labels[`slot${slotNr}`].split('(')[0];
         this.renderContent(slotNr); 
-        modal.style.display = 'flex';
+        document.getElementById('building-modal').style.display = 'flex';
     },
 
     closeMenu() {
@@ -79,38 +69,48 @@ window.BuildingUI = {
 
     hire(amount) {
         const slotKey = `slot${this.activeSlot}`;
-        const maxLimit = GameData.housing[slotKey].maxWorkers;
-        
-        if (this.workers[slotKey] + amount > maxLimit) {
-            UI.setMessage("Wohnraum voll! Erweitere das Gebäude.");
+        if (this.workers[slotKey] + amount > GameData.housing[slotKey].maxWorkers) {
+            UI.setMessage("Kein Platz mehr!");
             return;
         }
-
         if (GameData.stats.bienen >= amount) {
             GameData.stats.bienen -= amount;
             this.workers[slotKey] += amount;
             UI.updateStat('bienen', GameData.stats.bienen);
             this.renderContent(this.activeSlot);
-            UI.setMessage(`${amount} Biene(n) zugewiesen!`);
         } else {
-            UI.setMessage("Nicht genug freie Bienen!");
+            UI.setMessage("Nicht genug untätige Bienen!");
         }
     },
 
     upgradeHousing() {
         const slotKey = `slot${this.activeSlot}`;
         const price = GameData.prices.housingUpgrade;
-
         if (GameData.stats.honig >= price) {
             GameData.stats.honig -= price;
             GameData.housing[slotKey].maxWorkers = 50;
             GameData.housing[slotKey].level = 1;
             UI.updateStat('honig', GameData.stats.honig);
+            UI.refreshBuildings();
             this.renderContent(this.activeSlot);
             UI.setMessage("Wohnraum auf 50 Plätze erweitert!");
-            UI.refreshBuildings();
         } else {
-            UI.setMessage("Nicht genug Honig!");
+            UI.setMessage("Zu wenig Honig!");
+        }
+    },
+
+    upgradeBuilding() {
+        const slotKey = `slot${this.activeSlot}`;
+        const price = GameData.prices.buildingUpgrade;
+        if (GameData.stats.honig >= price) {
+            GameData.stats.honig -= price;
+            GameData.housing[slotKey].level = 2; 
+            UI.updateStat('honig', GameData.stats.honig);
+            UI.refreshBuildings();
+            this.renderContent(this.activeSlot);
+            UI.setMessage("Industrie-Upgrade abgeschlossen!");
+        } else {
+            UI.setMessage("Zu wenig Honig!");
         }
     }
 };
