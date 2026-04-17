@@ -53,7 +53,6 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* Wir zentrieren den Inhalt vertikal, damit das Bild auf der Koordinate sitzt */
     justify-content: center; 
 }
 
@@ -61,7 +60,6 @@ body {
     width: 100%;    
     height: auto;   
     display: block;
-    /* Sorgt dafür, dass das Bild die Position definiert */
 }
 
 /* Deine exakten Positionswerte */
@@ -84,10 +82,8 @@ body {
     border: 1px solid rgba(0,0,0,0.2);
     box-shadow: 0 4px 6px rgba(0,0,0,0.3);
     cursor: default;
-    
-    /* POSITIONIERUNG: */
     position: absolute;
-    bottom: -40px; /* Weiter nach unten geschoben */
+    bottom: -40px; 
     z-index: 10;
 }
 
@@ -139,6 +135,7 @@ body {
     border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
+    transition: all 0.3s ease;
 }
 
 /* Animation für den Upgrade-Banner */
@@ -201,18 +198,17 @@ body {
 .upgrade-btn { background: #e67e22 !important; color: white; }
 .close-modal { background: #c0392b; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
 
-/* Suche .fullscreen-btn in deiner CSS oder füge es neu hinzu */
 .fullscreen-btn {
     background: rgba(0, 0, 0, 0.7);
     color: #f1c40f;
     border: 2px solid #f1c40f;
     padding: 10px;
-    width: 100%; /* Nimmt die volle Breite der Sidebar ein */
+    width: 100%; 
     border-radius: 12px;
     cursor: pointer;
     font-weight: bold;
     font-size: 0.9rem;
-    margin-bottom: 10px; /* Abstand zur Biene darunter */
+    margin-bottom: 10px; 
     transition: all 0.3s ease;
     z-index: 100;
 }
@@ -223,6 +219,33 @@ body {
     transform: translateY(-2px);
 }
 
-.fullscreen-btn:active {
-    transform: translateY(0);
+/* --- NEU: SHOP LOGIK & GLOW --- */
+
+.shop-glow {
+    animation: shop-pulse 1.5s infinite;
+    box-shadow: 0 0 20px #f1c40f;
+    border: 2px solid #fff !important;
+}
+
+@keyframes shop-pulse {
+    0% { transform: scale(1); background-color: #8e44ad; }
+    50% { transform: scale(1.05); background-color: #f1c40f; }
+    100% { transform: scale(1); background-color: #8e44ad; }
+}
+
+.shop-item {
+    background: #34495e;
+    border: 1px solid #f1c40f;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    text-align: left;
+}
+
+.shop-item h4 { color: #f1c40f; margin-bottom: 5px; }
+.shop-item p { font-size: 0.85rem; color: #ecf0f1; margin-bottom: 10px; }
+.shop-item button { 
+    width: 100%; background: #27ae60; 
+    color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; 
+    font-weight: bold;
 }

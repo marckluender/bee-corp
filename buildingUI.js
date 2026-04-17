@@ -1,5 +1,3 @@
-// buildingUI.js - Erweiterte Steuerung
-
 const BuildingUI = {
     activeSlot: null,
     workers: {
@@ -24,27 +22,44 @@ const BuildingUI = {
     },
 
     renderContent(slotNr) {
-        const currentWorkers = this.workers[`slot${slotNr}`];
+        const slotKey = `slot${slotNr}`;
+        const currentWorkers = this.workers[slotKey];
+        const maxWorkers = GameData.housing[slotKey].maxWorkers;
+        const housingLevel = GameData.housing[slotKey].level;
+        
         const content = document.getElementById('modal-content');
         let bonusInfo = "";
+        let upgradeButton = "";
 
-        // Bonus-Berechnungen für die Anzeige
-        if (slotNr === 1) { // WaxStore
+        // Bonus-Berechnungen
+        if (slotNr === 1) { 
             const timeBonus = (currentWorkers * 0.1).toFixed(1);
             bonusInfo = `<div style="color: #2ecc71; margin-bottom: 10px;">Zeitgewinn: +${timeBonus}%</div>`;
-        } else if (slotNr === 2) { // NektarStore
+        } else if (slotNr === 2) { 
             const nectarBonus = (currentWorkers * 0.1).toFixed(1);
             bonusInfo = `<div style="color: #2ecc71; margin-bottom: 10px;">Nektar-Bonus: +${nectarBonus}%</div>`;
+        } else if (slotNr === 3) {
+            const beeBonus = (currentWorkers * 0.1).toFixed(1);
+            bonusInfo = `<div style="color: #2ecc71; margin-bottom: 10px;">Geburtsrate-Bonus: +${beeBonus}%</div>`;
+        }
+
+        // NEU: Wohnraum-Upgrade Button (wenn voll)
+        if (housingLevel === 0 && currentWorkers >= maxWorkers) {
+            upgradeButton = `
+                <button class="upgrade-btn" onclick="BuildingUI.upgradeHousing()">
+                    Wohnraum erweitern (${GameData.prices.housingUpgrade} 🍯)
+                </button>`;
         }
 
         content.innerHTML = `
             <div style="margin-bottom: 10px; font-size: 1.1rem; color: #f1c40f;">
-                Arbeiter in diesem Gebäude: <strong>${currentWorkers}</strong> 🐝
+                Arbeiter: <strong>${currentWorkers} / ${maxWorkers}</strong> 🐝
             </div>
             ${bonusInfo}
             <div class="modal-actions">
                 <button onclick="BuildingUI.hire(1)">+1 Biene zuweisen</button>
                 <button onclick="BuildingUI.hire(10)">+10 Bienen zuweisen</button>
+                ${upgradeButton}
             </div>
         `;
     },
@@ -53,9 +68,7 @@ const BuildingUI = {
         this.activeSlot = slotNr;
         const modal = document.getElementById('building-modal');
         const title = document.getElementById('modal-title');
-
         title.innerText = GameData.labels[`slot${slotNr}`].split('(')[0];
-        
         this.renderContent(slotNr); 
         modal.style.display = 'flex';
     },
@@ -67,7 +80,14 @@ const BuildingUI = {
 
     hire(amount) {
         const slotKey = `slot${this.activeSlot}`;
+        const maxLimit = GameData.housing[slotKey].maxWorkers;
         
+        // NEU: Kapazitätsprüfung
+        if (this.workers[slotKey] + amount > maxLimit) {
+            UI.setMessage("Wohnraum voll! Erweitere das Gebäude.");
+            return;
+        }
+
         if (GameData.stats.bienen >= amount) {
             GameData.stats.bienen -= amount;
             this.workers[slotKey] += amount;
@@ -80,13 +100,23 @@ const BuildingUI = {
         }
     },
 
-    checkUpgradeAvailable(slotNr) {
-        return false; 
-    },
+    // NEU: Housing Upgrade Logik
+    upgradeHousing() {
+        const slotKey = `slot${this.activeSlot}`;
+        const price = GameData.prices.housingUpgrade;
 
-    upgrade() {
-        UI.setMessage("Gebäude wurde verbessert!");
-        this.renderContent(this.activeSlot);
+        if (GameData.stats.honig >= price) {
+            GameData.stats.honig -= price;
+            GameData.housing[slotKey].maxWorkers = 50;
+            GameData.housing[slotKey].level = 1;
+
+            UI.updateStat('honig', GameData.stats.honig);
+            this.renderContent(this.activeSlot);
+            UI.setMessage("Wohnraum auf 50 Plätze erweitert!");
+            UI.refreshBuildings();
+        } else {
+            UI.setMessage("Nicht genug Honig!");
+        }
     }
 };
 

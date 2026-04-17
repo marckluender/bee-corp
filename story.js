@@ -21,28 +21,30 @@ const StoryModule = {
             text: "Toll gemacht! Aus dir wird noch ein Profi!", 
             type: "wait_for_stat", 
             stat: "nektar", 
-            value: 1,
+            value: 1, // Prüft auf MINDESTENS 1
             onStart: () => document.getElementById("bee-generator").classList.remove("tutorial-jump","tutorial-highlight")
         },
         { text: "Mach ruhig noch weiter. Wir brauchen ganz viel davon.", type: "wait_for_stat", stat: "nektar", value: 10 },
         { 
             text: "Unsere Königin wandelt den Nektar in Honig um", 
             type: "wait_for_stat", 
-            stat: "nektar", 
-            value: 25,
-            action: () => StoryModule.animateStat("stat-honig")
+            stat: "honig", 
+            value: 1 
         },
-        { text: "Bald kannst du dir dein erstes Gebäude kaufen", type: "wait_for_stat", stat: "honig", value: 20 },
-        { text: "Diese unterstützen dich beim Sammeln", type: "pause", duration: 15000 },
-        { text: "Kauf dir doch den Wax-Store oder den Nektar-Store", type: "click_anywhere" }, // Hier könnte man später auf Shop-Klick prüfen
-        { text: "Jetzt geht's erst richtig los! Hurraaaa!!!", type: "end" }
+        {
+            id: "ende",
+            text: "Du bist nun auf dich allein gestellt. Viel Erfolg!",
+            type: "click_anywhere",
+            onStart: () => {
+                // Startet den Meilenstein-Watcher nach dem Tutorial
+                StoryEvents.startPostTutorialWatcher();
+            }
+        }
     ],
 
     init() {
         this.showStep();
-        document.addEventListener('click', (e) => this.handleInput(e));
-        // Hintergrund-Check für Statistiken
-        setInterval(() => this.checkStats(), 500);
+        document.addEventListener("click", (e) => this.handleGlobalClick(e));
     },
 
     showStep() {
@@ -52,93 +54,84 @@ const StoryModule = {
         UI.setMessage(step.text);
         if (step.onStart) step.onStart();
 
-        if (step.type === "click_or_wait" || step.type === "pause") {
+        // LOGIK FÜR STAT-PRÜFUNG
+        if (step.type === "wait_for_stat") {
+            const checkStat = setInterval(() => {
+                // Hier ist das entscheidende "at least" (>=)
+                // Es prüft: Ist der aktuelle Wert größer oder gleich dem Zielwert?
+                if (GameData.stats[step.stat] >= step.value) {
+                    clearInterval(checkStat);
+                    this.next();
+                }
+            }, 500);
+        }
+
+        if (step.type === "click_or_wait") {
             setTimeout(() => {
-                if (this.steps[this.currentStep] === step) this.next();
+                if (this.currentStep === this.steps.indexOf(step)) this.next();
             }, step.duration);
         }
     },
 
-    handleInput(e) {
+    handleGlobalClick(e) {
         const step = this.steps[this.currentStep];
         if (!step) return;
 
-        if (step.type === "click_anywhere" || step.type === "click_or_wait") {
+        if (step.type === "click_anywhere") {
             this.next();
-        } 
-        else if (step.type === "target_click") {
+        } else if (step.type === "target_click") {
             if (e.target.closest(`#${step.targetId}`)) {
                 this.next();
             } else {
                 this.missedClicks++;
-                if (this.missedClicks >= 5) {
-                    UI.setMessage("Trau dich ruhig. Klick MICH!");
-                    document.getElementById(step.targetId).classList.add("tutorial-jump");
-                }
+                if (this.missedClicks > 3) UI.setMessage("Hier drüben! Klick auf mich!");
             }
         }
-    },
-
-    checkStats() {
-        const step = this.steps[this.currentStep];
-        if (step && step.type === "wait_for_stat") {
-            if (GameData.stats[step.stat] >= step.value) {
-                if (step.action) step.action();
-                this.next();
-            }
-        }
-    },
-
-    animateStat(id) {
-        const el = document.getElementById(id);
-        el.classList.add("stat-bounce");
-        setTimeout(() => el.classList.remove("stat-bounce"), 1000);
     },
 
     next() {
         this.missedClicks = 0;
         this.currentStep++;
-        this.showStep();
+        if (this.currentStep < this.steps.length) {
+            this.showStep();
+        }
     }
 };
 
-// story.js - Erweiterung
+// --- StoryEvents - Meilenstein Logik nach dem Tutorial ---
 
 const StoryEvents = {
-    // Diese Liste enthält Ereignisse, die eintreten, wenn Stats erreicht werden
     milestones: [
         {
             condition: () => GameData.stats.bienen >= 1,
             triggered: false,
             action: () => {
                 UI.setMessage("Uih, eine neue Biene!");
-                // Hier könntest du z.B. ein neues Gebäude freischalten oder ein Bild ändern
+                if(UI.showAlert) UI.showAlert("Erfolg: Erster Nachwuchs! 🐝");
             }
         },
         {
-            condition: () => BuildingUI.workers.slot1 >= 5,
+            condition: () => window.BuildingUI && BuildingUI.workers.slot1 >= 5,
             triggered: false,
             action: () => {
                 UI.setMessage("Ein Team aus 5 Arbeitern im WaxStore? Das geht jetzt fix!");
-                // Eventuelle Belohnung
             }
         }
     ],
 
-    // Diese Funktion wird jede Sekunde aufgerufen
     watchStats() {
         this.milestones.forEach(event => {
             if (!event.triggered && event.condition()) {
-                event.triggered = true; // Verhindert, dass es mehrfach auslöst
+                event.triggered = true;
                 event.action();
             }
         });
     },
 
     startPostTutorialWatcher() {
-        console.log("Tutorial beendet. Überwachung der Stats gestartet...");
+        console.log("Tutorial beendet. Meilenstein-Überwachung gestartet.");
         setInterval(() => this.watchStats(), 1000);
     }
 };
 
-window.addEventListener('DOMContentLoaded', () => StoryModule.init());
+window.addEventListener("load", () => StoryModule.init());

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bee-Corp: Masterplan</title>
     <link rel="stylesheet" href="newstyle.css">
+    <link rel="stylesheet" href="tutorial.css">
 </head>
 <body>
     <div class="game-wrapper">
@@ -32,23 +33,30 @@
                     </ul>
                     <button class="shop-btn" id="shop-trigger">Forschungs-Shop</button>
                 </div>
-                
             </div>
+
             <div id="building-modal" class="modal-overlay" style="display:none;">
-        <div class="modal-window">
-            <h3 id="modal-title">Gebäude Name</h3>
-            <div id="modal-content">
+                <div class="modal-window">
+                    <h3 id="modal-title">Gebäude Name</h3>
+                    <div id="modal-content"></div>
+                    <button class="close-modal" onclick="BuildingUI.closeMenu()">Schließen</button>
                 </div>
-            <button class="close-modal" onclick="BuildingUI.closeMenu()">Schließen</button>
-        </div>
-</div>
+            </div>
+
+            <div id="shop-modal" class="modal-overlay" style="display:none;">
+                <div class="modal-window">
+                    <h3>Forschungs-Shop</h3>
+                    <div id="shop-content"></div>
+                    <button class="close-modal" onclick="ShopUI.close()">Schließen</button>
+                </div>
+            </div>
+
         </div>
     </div>
-    <script src="newscript.js"></script>
-    <link rel="stylesheet" href="tutorial.css">
 
-<script src="newscript.js"></script>
-<script src="story.js"></script>
-<script src="buildingUI.js"></script>
+    <script src="newscript.js"></script>
+    <script src="story.js"></script>
+    <script src="buildingUI.js"></script>
+    <script src="shop.js"></script>
 </body>
 </html>
