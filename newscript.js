@@ -217,10 +217,14 @@ for (let i = 1; i <= 6; i++) {
     }
 }
 
-document.getElementById('bee-generator').onclick = () => {
+document.getElementById('bee-generator').onclick = (e) => {
+    // 1. Bestehende Nektar-Logik
     GameData.stats.nektar++;
     UI.updateStat('nektar', GameData.stats.nektar);
     UI.refreshBuildings();
+
+    // 2. Neuer Partikeleffekt
+    createPollenEffect(e);
 };
 
 document.getElementById('shop-trigger').onclick = () => {
@@ -239,5 +243,35 @@ function toggleFullscreen() {
         document.documentElement.requestFullscreen();
     } else {
         document.exitFullscreen();
+    }
+}
+
+function createPollenEffect(e) {
+    const container = document.querySelector('.game-container');
+    const numParticles = 8; // Anzahl der Partikel pro Klick
+
+    for (let i = 0; i < numParticles; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'pollen-particle';
+        
+        // Position direkt beim Mauszeiger/Klick
+        const x = e.clientX;
+        const y = e.clientY;
+        
+        particle.style.left = `${x}px`;
+        particle.style.top = `${y}px`;
+        
+        // Zufällige horizontale Drift für natürliche Bewegung
+        const drift = (Math.random() - 0.5) * 60 + "px";
+        particle.style.setProperty('--drift', drift);
+        
+        // Zufällige Dauer und Verzögerung
+        const duration = 0.5 + Math.random() * 0.8;
+        particle.style.animation = `pollen-fall ${duration}s ease-out forwards`;
+        
+        container.appendChild(particle);
+        
+        // Element nach der Animation entfernen
+        setTimeout(() => particle.remove(), duration * 1000);
     }
 }

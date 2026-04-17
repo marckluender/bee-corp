@@ -21,8 +21,12 @@ body {
 
 img {
     -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
     -user-drag: none;
-    -webkit-tap-highlight-color: transparent;
+    /* Verhindert auch das Kontextmenü (Rechtsklick-Speichern), falls gewünscht */
+    pointer-events: auto; 
 }
 
 /* --- GAME CONTAINER --- */
@@ -228,7 +232,7 @@ img {
 .modal-overlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.15);
     display: flex; justify-content: center; align-items: center;
     z-index: 2000;
 }
@@ -294,3 +298,32 @@ img {
 .upgrade-notification.show {
     top: 0;
 }
+
+/* Partikel-Styling */
+.pollen-particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background-color: #f1c40f; /* Goldgelb wie Blütenstaub */
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1000;
+    filter: blur(1px);
+}
+
+/* Animation für den Fall-Effekt */
+@keyframes pollen-fall {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--drift), 100px) scale(0.5);
+        opacity: 0;
+    }
+}
+
+// Verhindert das Ziehen aller Bilder im Spiel global
+document.querySelectorAll('img').forEach(img => {
+    img.addEventListener('dragstart', (e) => e.preventDefault());
+});
