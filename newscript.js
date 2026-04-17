@@ -56,14 +56,8 @@ const AudioManager = {
         this.bgMusic.loop = true;
         this.bgMusic.volume = 0.4;
         
-        // Erstelle den Button dynamisch
-        const btn = document.createElement('button');
-        btn.id = 'sound-toggle';
-        btn.className = 'sound-toggle-btn';
-        btn.innerHTML = '🔊';
-        btn.title = 'Ton an/aus';
-        document.querySelector('.game-container').appendChild(btn);
-
+        // Greife auf den existierenden Button im HTML zu
+        const btn = document.getElementById('sound-toggle');
         btn.onclick = () => this.toggleMute();
 
         // Starte Musik beim ersten Klick auf das Dokument (Browser-Anforderung)

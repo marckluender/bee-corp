@@ -153,21 +153,27 @@ img {
     align-items: stretch;
 }
 
-.fullscreen-btn {
+.top-action-buttons {
+    display: flex;
+    gap: 5px;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.fullscreen-btn, .sound-toggle-btn {
     background: rgba(0, 0, 0, 0.7);
     color: #f1c40f;
     border: 2px solid #f1c40f;
     padding: 10px;
-    width: 100%; 
+    flex: 1;
     border-radius: 12px;
     cursor: pointer;
     font-weight: bold;
     font-size: 0.9rem;
-    margin-bottom: 5px; 
     transition: all 0.3s ease;
 }
 
-.fullscreen-btn:hover {
+.fullscreen-btn:hover, .sound-toggle-btn:hover {
     background: #f1c40f;
     color: #1a1a1a;
     transform: translateY(-2px);
