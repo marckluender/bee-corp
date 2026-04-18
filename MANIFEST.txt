@@ -1,0 +1,48 @@
+BEE-CORP MASTER-MANIFEST (V1.0)
+
+1. DIE VISION
+Ein täuschend echter Idle-Clicker. Er beginnt bunt, fröhlich und belohnend. Je weiter der Spieler fortschreitet, desto mehr bröckelt die Fassade und enthüllt BeeCorp: Ein kaltes, industrielles System, das Bienen als reine Biomasse-Ressourcen verbraucht.
+
+2. TECHNISCHE STRUKTUR (Refactoring-Ziele)
+
+    Zentrale Daten: Alle Spielwerte müssen in GAME_CONFIG (config.js) liegen.
+
+    Das 6x5 System: 6 Gebäude-Slots. Jedes Gebäude hat exakt 5 Level.
+
+        Level 1-2: Fokus auf Effizienz und "süßes" Wachstum.
+
+        Level 3-5: Fokus auf industrielle Ausbeutung (BeeCorp-Branding).
+
+    Ressourcen-Logik: * Nektar (Rohstoff) -> Honig (Währung) -> Upgrades.
+
+        Bienen (Arbeitskraft/Verschleißteil).
+
+3. DIE 6 GEBÄUDE-SÄULEN
+
+    WaxStore: Basis-Honigproduktion. (Später: Chemische Extraktion).
+
+    NektarStore: Automatische Nektar-Gewinnung. (Später: Monokultur-Raubbau).
+
+    Flugschule: Generiert neue Bienen. (Später: Klon-Zentrum).
+
+    EnzymLabor: Multiplikator für Honig-Wandlung. (Später: Genetische Manipulation).
+
+    Pipeline: Erhöht die Geschwindigkeit aller Prozesse. (Später: Totale Überwachung).
+
+    Hive-Core: Endgame-Zentrale. Das "Gehirn" von BeeCorp.
+
+4. PROGRESSION & NARRATIV
+
+    Anfang: BeeBabaluga ist dein Freund. Messages sind motivierend.
+
+    Mitte: Die "Königin" wird seltener erwähnt, "BeeCorp Management" übernimmt die Kommunikation.
+
+    Ende: Bienen werden "deaktiviert" statt "schlafen zu gehen". Der Counter für tote Bienen wird zum relevanten Faktor.
+
+5. ENTWICKLER-REGELN (Für zukünftige Prompts)
+
+    Präzision: Ändere beim Refactoring nie die API des GameData-Objekts, ohne es vorher zu sagen.
+
+    Modularität: UI (buildingUI.js) und Logik (newscript.js) strikt trennen.
+
+    Stil: Der Code soll sauber kommentiert sein, damit wir bei 3000 Zeilen nicht den Überblick verlieren.

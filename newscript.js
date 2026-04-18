@@ -1,66 +1,55 @@
 // newscript.js
 const GameData = {
-    stats: { nektar: 0, honig: 0, bienen: 0 },
+    // Dynamischer Import der Startwerte aus der Config
+    stats: { ...GAME_CONFIG.startingStats },
     buildings: {
         slot1: false, slot2: false, slot3: false,
         slot4: false, slot5: false, slot6: false
     },
     housing: {
-        slot1: { maxWorkers: 10, level: 0 },
-        slot2: { maxWorkers: 10, level: 0 },
-        slot3: { maxWorkers: 10, level: 0 },
-        slot4: { maxWorkers: 10, level: 0 },
-        slot5: { maxWorkers: 10, level: 0 },
-        slot6: { maxWorkers: 10, level: 0 }
+        slot1: { maxWorkers: GAME_CONFIG.limits.defaultMaxWorkers, level: 0 },
+        slot2: { maxWorkers: GAME_CONFIG.limits.defaultMaxWorkers, level: 0 },
+        slot3: { maxWorkers: GAME_CONFIG.limits.defaultMaxWorkers, level: 0 },
+        slot4: { maxWorkers: GAME_CONFIG.limits.defaultMaxWorkers, level: 0 },
+        slot5: { maxWorkers: GAME_CONFIG.limits.defaultMaxWorkers, level: 0 },
+        slot6: { maxWorkers: GAME_CONFIG.limits.defaultMaxWorkers, level: 0 }
     },
-    prices: {
-        slot1: 5, slot2: 25, slot3: 250,
-        slot4: 1500, slot5: 45000, slot6: 2500000,
-        housingUpgrade: 50,
-        buildingUpgrade: 25 
-    },
-    labels: {
-        slot1: "WaxStore (5 🍯)", 
-        slot2: "NektarStore (25 🍯)",
-        slot3: "Flugschule (250 🍯)", 
-        slot4: "EnzymLabor (1.5k 🍯)",
-        slot5: "Nektar-Pipeline (45k 🍯)", 
-        slot6: "Hive-Core (2.5M 🍯)"
-    },
+    prices: { ...GAME_CONFIG.prices },
+    labels: { ...GAME_CONFIG.labels },
     shopItems: [
         {
             id: 'housing_slot1',
             name: 'Wohnraum: WaxStore',
-            desc: 'Erweitert den Platz auf 50 Bienen.',
-            cost: 50,
-            condition: () => GameData.buildings.slot1 && GameData.housing.slot1.maxWorkers === 10 && (window.BuildingUI && window.BuildingUI.workers.slot1 >= 10),
-            action: () => { GameData.housing.slot1.maxWorkers = 50; GameData.housing.slot1.level = 1; }
+            desc: `Erweitert den Platz auf ${GAME_CONFIG.limits.upgradedMaxWorkers} Bienen.`,
+            cost: GAME_CONFIG.prices.housingUpgrade,
+            condition: () => GameData.buildings.slot1 && GameData.housing.slot1.maxWorkers === GAME_CONFIG.limits.defaultMaxWorkers && (window.BuildingUI && window.BuildingUI.workers.slot1 >= GAME_CONFIG.limits.workersNeededForLevel2),
+            action: () => { GameData.housing.slot1.maxWorkers = GAME_CONFIG.limits.upgradedMaxWorkers; GameData.housing.slot1.level = 1; }
         },
         {
             id: 'housing_slot2',
             name: 'Wohnraum: NektarStore',
-            desc: 'Erweitert den Platz auf 50 Bienen.',
-            cost: 50,
-            condition: () => GameData.buildings.slot2 && GameData.housing.slot2.maxWorkers === 10 && (window.BuildingUI && window.BuildingUI.workers.slot2 >= 10),
-            action: () => { GameData.housing.slot2.maxWorkers = 50; GameData.housing.slot2.level = 1; }
+            desc: `Erweitert den Platz auf ${GAME_CONFIG.limits.upgradedMaxWorkers} Bienen.`,
+            cost: GAME_CONFIG.prices.housingUpgrade,
+            condition: () => GameData.buildings.slot2 && GameData.housing.slot2.maxWorkers === GAME_CONFIG.limits.defaultMaxWorkers && (window.BuildingUI && window.BuildingUI.workers.slot2 >= GAME_CONFIG.limits.workersNeededForLevel2),
+            action: () => { GameData.housing.slot2.maxWorkers = GAME_CONFIG.limits.upgradedMaxWorkers; GameData.housing.slot2.level = 1; }
         }
     ]
 };
 
 const AudioManager = {
-    bgMusic: new Audio('sfx/relaxed bees.mp3'),
+    bgMusic: new Audio(GAME_CONFIG.audio.bgMusicPath),
     isMuted: false,
     hasStarted: false,
 
     init() {
         this.bgMusic.loop = true;
-        this.bgMusic.volume = 0.4;
+        this.bgMusic.volume = GAME_CONFIG.audio.defaultVolume;
         
-        // Greife auf den existierenden Button im HTML zu
         const btn = document.getElementById('sound-toggle');
-        btn.onclick = () => this.toggleMute();
+        if(btn) {
+            btn.onclick = () => this.toggleMute();
+        }
 
-        // Starte Musik beim ersten Klick auf das Dokument (Browser-Anforderung)
         document.addEventListener('click', () => {
             if (!this.hasStarted && !this.isMuted) {
                 this.bgMusic.play().catch(e => console.log("Audio play blocked"));
@@ -107,9 +96,9 @@ const UI = {
             const housing = GameData.housing[key];
 
             if (GameData.buildings[key]) {
-                // Grafik-Logik: slot2=nektar, slot4=enzym, slot5=pipeline, slot6=core, rest=wax
                 let typePrefix = "wax";
                 if (slotNr === 2) typePrefix = "nektar";
+                if (slotNr === 3) typePrefix = "flug";
                 if (slotNr === 4) typePrefix = "enzym";
                 if (slotNr === 5) typePrefix = "pipeline";
                 if (slotNr === 6) typePrefix = "core";
@@ -187,15 +176,13 @@ function checkShopNotifications() {
 }
 
 function startHoneyProduction() {
-    let baseTime = 5000; 
-    if (GameData.buildings.slot1) baseTime = 2500; 
+    let baseTime = GAME_CONFIG.intervals.honeyBase; 
+    if (GameData.buildings.slot1) baseTime = GAME_CONFIG.intervals.honeyUpgraded; 
     const workerBonus = (window.BuildingUI) ? window.BuildingUI.workers.slot1 : 0;
+    const laborBonus = GameData.buildings.slot4 ? GAME_CONFIG.bonuses.enzymLabor : 0;
+    const levelBonus = (GameData.housing.slot1.level >= 2) ? GAME_CONFIG.bonuses.housingLevel2 : 0;
     
-    // Bonus vom EnzymLabor (Slot 4) falls vorhanden
-    const laborBonus = GameData.buildings.slot4 ? 0.20 : 0;
-    const levelBonus = (GameData.housing.slot1.level >= 2) ? 0.10 : 0;
-    
-    let finalTime = baseTime / (1 + (workerBonus * 0.01) + levelBonus + laborBonus);
+    let finalTime = baseTime / (1 + (workerBonus * GAME_CONFIG.bonuses.workerPerBee) + levelBonus + laborBonus);
 
     setTimeout(() => {
         if (GameData.stats.nektar >= 1) {
@@ -213,30 +200,26 @@ function startHoneyProduction() {
 function startNectarProduction() {
     if (GameData.buildings.slot2) {
         const workerCount = (window.BuildingUI) ? window.BuildingUI.workers.slot2 : 0;
+        const pipelineBonus = GameData.buildings.slot5 ? GAME_CONFIG.bonuses.pipeline : 0;
+        const levelBonus = (GameData.housing.slot2.level >= 2) ? GAME_CONFIG.bonuses.housingLevel2 : 0;
         
-        // Bonus von der Pipeline (Slot 5) falls vorhanden
-        const pipelineBonus = GameData.buildings.slot5 ? 0.50 : 0;
-        const levelBonus = (GameData.housing.slot2.level >= 2) ? 0.10 : 0;
-        
-        const bonusFactor = 1 * (1 + (workerCount * 0.01) + levelBonus + pipelineBonus);
+        const bonusFactor = 1 * (1 + (workerCount * GAME_CONFIG.bonuses.workerPerBee) + levelBonus + pipelineBonus);
         GameData.stats.nektar += bonusFactor;
         UI.updateStat('nektar', GameData.stats.nektar);
         UI.refreshBuildings();
         UI.triggerPump(2);
     }
-    setTimeout(startNectarProduction, 10000);
+    setTimeout(startNectarProduction, GAME_CONFIG.intervals.nectarProductionTick);
 }
 
 function startBeeProduction() {
-    let baseTime = 10000; 
-    if (GameData.buildings.slot3) baseTime = 5000; 
+    let baseTime = GAME_CONFIG.intervals.beeBase; 
+    if (GameData.buildings.slot3) baseTime = GAME_CONFIG.intervals.beeUpgraded; 
     const workerCount = (window.BuildingUI) ? window.BuildingUI.workers.slot3 : 0;
+    const coreBonus = GameData.buildings.slot6 ? GAME_CONFIG.bonuses.hiveCore : 0;
+    const levelBonus = (GameData.housing.slot3.level >= 2) ? GAME_CONFIG.bonuses.housingLevel2 : 0;
     
-    // Bonus vom Hive-Core (Slot 6)
-    const coreBonus = GameData.buildings.slot6 ? 1.0 : 0;
-    const levelBonus = (GameData.housing.slot3.level >= 2) ? 0.10 : 0;
-    
-    let finalTime = baseTime / (1 + (workerCount * 0.01) + levelBonus + coreBonus);
+    let finalTime = baseTime / (1 + (workerCount * GAME_CONFIG.bonuses.workerPerBee) + levelBonus + coreBonus);
 
     setTimeout(() => {
         GameData.stats.bienen++;
@@ -246,50 +229,39 @@ function startBeeProduction() {
     }, finalTime);
 }
 
-Object.keys(GameData.labels).forEach((key, index) => UI.updateLabel(index + 1, GameData.labels[key]));
-UI.refreshBuildings(); 
-startHoneyProduction();
-startNectarProduction();
-startBeeProduction();
-AudioManager.init();
-setInterval(checkShopNotifications, 2000);
+// --- INITIALISIERUNG & KAUF-LOGIK ---
 
-for (let i = 1; i <= 6; i++) {
-    const slotElement = document.getElementById(`slot-${i}`);
-    if(slotElement) {
-        slotElement.onclick = () => {
-            const key = `slot${i}`;
+Object.keys(GameData.labels).forEach((key, index) => {
+    const slotNr = index + 1;
+    const label = document.getElementById(`label-${slotNr}`);
+    if (label) {
+        label.onclick = () => {
             const price = GameData.prices[key];
             if (!GameData.buildings[key] && GameData.stats.honig >= price) {
                 GameData.stats.honig -= price;
                 GameData.buildings[key] = true;
                 UI.updateStat('honig', GameData.stats.honig);
                 UI.refreshBuildings();
-                UI.setMessage("Neues Gebäude errichtet!");
+                UI.setMessage(`${GameData.labels[key].split('(')[0]} erfolgreich errichtet!`);
+            } else if (!GameData.buildings[key]) {
+                UI.setMessage("Nicht genug Honig!");
             }
         };
     }
-}
-
-// Vollbild-Logik
-function toggleFullscreen() {
-    if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(err => {
-            UI.setMessage("Vollbild fehlgeschlagen");
-        });
-    } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        }
-    }
-}
-
-// Event-Listener für den Fullscreen-Button
-document.querySelectorAll('.fullscreen-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        toggleFullscreen();
-    });
 });
+
+window.onload = () => {
+    UI.refreshBuildings();
+    startHoneyProduction();
+    startNectarProduction();
+    startBeeProduction();
+    
+    if (window.StoryModule) window.StoryModule.init();
+    if (window.BuildingUI) window.BuildingUI.init();
+    AudioManager.init();
+    
+    setInterval(checkShopNotifications, GAME_CONFIG.intervals.shopCheck);
+};
 
 document.getElementById('bee-generator').onclick = (e) => {
     GameData.stats.nektar++;
@@ -325,8 +297,3 @@ function createPollenEffect(e) {
         setTimeout(() => particle.remove(), duration * 1000);
     }
 }
-
-// Verhindert das Ziehen aller Bilder (aus newstyle.css verschoben)
-document.querySelectorAll('img').forEach(img => {
-    img.addEventListener('dragstart', (e) => e.preventDefault());
-});
