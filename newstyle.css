@@ -25,7 +25,6 @@ img {
     -moz-user-drag: none;
     -o-user-drag: none;
     -user-drag: none;
-    /* Verhindert auch das Kontextmenü (Rechtsklick-Speichern), falls gewünscht */
     pointer-events: auto; 
 }
 
@@ -72,7 +71,6 @@ img {
 .slot-5 { top: 30%; left: 17%; width: 10%; }
 .slot-6 { top: 60%; left: 59%; width: 10%; }
 
-/* Kauf-Buttons unter den Gebäuden */
 .label {
     background: #7f8c8d;
     color: white;
@@ -89,59 +87,30 @@ img {
     z-index: 10;
 }
 
-/* --- SPAWN-ICON (NEU & ZENTRIERT) --- */
+/* --- SPAWN-ICON --- */
 .floating-spawn-icon {
     position: absolute;
-    
-    /* GRÖSSE HIER ANPASSEN */
     font-size: 3.5rem; 
-    
     pointer-events: none;
     z-index: 150;
-    
-    /* Startposition: Exakt Mitte des Gebäudes */
     top: 50%;
     left: 50%;
-    
-    /* Mathematische Zentrierung des Ankerpunkts */
     transform: translate(-50%, -50%);
-    
     animation: icon-float-up 1.2s ease-out forwards;
 }
 
 @keyframes icon-float-up {
-    0% {
-        transform: translate(-50%, -50%) scale(0.5) rotate(0deg);
-        opacity: 1;
-    }
-    100% {
-        transform: translate(-50%, -150px) scale(0.3) rotate(25deg);;
-        opacity: 0;
-    }
+    0% { transform: translate(-50%, -50%) scale(0.5) rotate(0deg); opacity: 1; }
+    100% { transform: translate(-50%, -150px) scale(0.3) rotate(25deg); opacity: 0; }
 }
 
 /* --- GEBÄUDE ANIMATIONEN --- */
-.idle-pump {
-    animation: building-breath 3s ease-in-out infinite;
-}
+.idle-pump { animation: building-breath 3s ease-in-out infinite; }
+@keyframes building-breath { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+.active-pump { animation: building-jump 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; z-index: 100; }
+@keyframes building-jump { 0% { transform: scale(1); } 30% { transform: scale(1.2) translateY(-10px); } 100% { transform: scale(1); } }
 
-@keyframes building-breath {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.03); }
-}
-
-.active-pump {
-    animation: building-jump 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-    z-index: 100;
-}
-
-@keyframes building-jump {
-    0% { transform: scale(1); }
-    30% { transform: scale(1.2) translateY(-10px); }
-    100% { transform: scale(1); }
-}
-
-/* --- UI SIDEBAR (RECHTS) --- */
+/* --- UI SIDEBAR --- */
 .ui-sidebar {
     position: absolute;
     top: 10%;
@@ -173,21 +142,9 @@ img {
     transition: all 0.3s ease;
 }
 
-.fullscreen-btn:hover, .sound-toggle-btn:hover {
-    background: #f1c40f;
-    color: #1a1a1a;
-    transform: translateY(-2px);
-}
-
-.bee-character img {
-    width: 100%;
-    border-radius: 15px;
-    cursor: pointer;
-}
-
-#bee-generator:active {
-    transform: scale(0.92);
-}
+.fullscreen-btn:hover, .sound-toggle-btn:hover { background: #f1c40f; color: #1a1a1a; transform: translateY(-2px); }
+.bee-character img { width: 100%; border-radius: 15px; cursor: pointer; }
+#bee-generator:active { transform: scale(0.92); }
 
 .message-box {
     background: rgba(0, 0, 0, 0.7);
@@ -222,23 +179,14 @@ img {
     transition: all 0.3s ease;
 }
 
-.shop-glow {
-    animation: shop-pulse 1.5s infinite;
-    box-shadow: 0 0 20px #f1c40f;
-    border: 2px solid #fff !important;
-}
+.shop-glow { animation: shop-pulse 1.5s infinite; box-shadow: 0 0 20px #f1c40f; border: 2px solid #fff !important; }
+@keyframes shop-pulse { 0% { transform: scale(1); background-color: #8e44ad; } 50% { transform: scale(1.05); background-color: #f1c40f; } 100% { transform: scale(1); background-color: #8e44ad; } }
 
-@keyframes shop-pulse {
-    0% { transform: scale(1); background-color: #8e44ad; }
-    50% { transform: scale(1.05); background-color: #f1c40f; }
-    100% { transform: scale(1); background-color: #8e44ad; }
-}
-
-/* --- MODALS (GEBÄUDE & SHOP) --- */
+/* --- MODALS --- */
 .modal-overlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.15);
+    background: rgba(0,0,0,0.25);
     display: flex; justify-content: center; align-items: center;
     z-index: 2000;
 }
@@ -248,83 +196,58 @@ img {
     border: 3px solid #f1c40f;
     border-radius: 20px;
     padding: 20px;
-    min-width: 250px;
+    min-width: 320px;
     text-align: center;
     color: white;
 }
 
+.close-modal { background: #c0392b; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin-top: 15px; }
+
+/* --- BUILDING MODAL DETAILS --- */
+.modal-status-text { margin-bottom: 5px; font-size: 0.9rem; color: #bdc3c7; }
+.modal-workforce-text { margin-bottom: 10px; font-size: 1.1rem; color: #f1c40f; }
+.modal-efficiency-text { color: #2ecc71; margin-bottom: 15px; font-weight: bold; }
+
 .modal-actions {
-    display: flex; flex-direction: column; gap: 10px; margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
 }
 
-.modal-actions button {
-    background: #f1c40f; border: none; padding: 10px; border-radius: 5px;
-    font-weight: bold; cursor: pointer;
-}
-
-.upgrade-btn { background: #e67e22 !important; color: white; }
-.close-modal { background: #c0392b; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
-
-.shop-item {
+.modal-btn {
     background: #34495e;
+    color: white;
     border: 1px solid #f1c40f;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 10px;
-    text-align: left;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
 }
 
-.shop-item h4 { color: #f1c40f; margin-bottom: 5px; }
-.shop-item p { font-size: 0.85rem; color: #ecf0f1; margin-bottom: 10px; }
-.shop-item button { 
-    width: 100%; background: #27ae60; 
-    color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; 
-    font-weight: bold;
-}
+.modal-btn:hover { background: #f1c40f; color: #1a1a1a; }
+
+.upgrade-btn { background: #27ae60 !important; border-color: #2ecc71 !important; margin-top: 5px; }
+
+/* --- MIXER STYLES --- */
+.sound-menu-content { display: flex; flex-direction: column; gap: 15px; padding: 15px 0; }
+.volume-control { display: flex; flex-direction: column; gap: 5px; text-align: left; }
+.volume-control label { color: #f1c40f; font-size: 0.85rem; font-weight: bold; }
+.volume-control input[type="range"] { width: 100%; cursor: pointer; accent-color: #f1c40f; }
+.sound-row { display: flex; justify-content: space-between; align-items: center; color: white; font-size: 0.9rem; }
 
 /* --- NOTIFICATIONS --- */
 .upgrade-notification {
-    position: absolute;
-    top: -60px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #f1c40f;
-    color: #1a1a1a;
-    padding: 12px 30px;
-    border-radius: 0 0 20px 20px;
-    font-weight: bold;
-    font-size: 1.1rem;
-    z-index: 1000;
-    transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-    border: 2px solid #000;
-    border-top: none;
+    position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
+    background: #f1c40f; color: #1a1a1a; padding: 12px 30px; border-radius: 0 0 20px 20px;
+    font-weight: bold; z-index: 1000; transition: top 0.5s ease;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5); border: 2px solid #000; border-top: none;
 }
+.upgrade-notification.show { top: 0; }
 
-.upgrade-notification.show {
-    top: 0;
-}
-
-/* Partikel-Styling */
 .pollen-particle {
-    position: absolute;
-    width: 6px;
-    height: 6px;
-    background-color: #f1c40f; /* Goldgelb wie Blütenstaub */
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 1000;
-    filter: blur(1px);
+    position: absolute; width: 6px; height: 6px; background-color: #f1c40f;
+    border-radius: 50%; pointer-events: none; z-index: 1000; filter: blur(1px);
 }
-
-/* Animation für den Fall-Effekt */
-@keyframes pollen-fall {
-    0% {
-        transform: translate(0, 0) scale(1);
-        opacity: 1;
-    }
-    100% {
-        transform: translate(var(--drift), 100px) scale(0.5);
-        opacity: 0;
-    }
-}
+@keyframes pollen-fall { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(var(--drift), 100px) scale(0.5); opacity: 0; } }

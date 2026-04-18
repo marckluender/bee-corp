@@ -56,14 +56,14 @@ window.BuildingUI = {
         }
 
         content.innerHTML = `
-            <div style="margin-bottom: 5px; font-size: 0.9rem; color: #bdc3c7;">Status: Level ${housing.level}</div>
-            <div style="margin-bottom: 10px; font-size: 1.1rem; color: #f1c40f;">
+            <div class="modal-status-text">Status: Level ${housing.level}</div>
+            <div class="modal-workforce-text" style="color: #f1c40f; font-size: 1.1rem; margin: 10px 0;">
                 Belegschaft: <strong>${currentWorkers} / ${housing.maxWorkers}</strong> 🐝
             </div>
-            <div style="color: #2ecc71; margin-bottom: 10px;">Effizienz-Bonus: +${bonusVal.toFixed(1)}%</div>
+            <div class="modal-efficiency-text">Effizienz-Bonus: +${bonusVal.toFixed(1)}%</div>
             <div class="modal-actions">
-                <button onclick="BuildingUI.hire(1)">+1 Arbeiter</button>
-                <button onclick="BuildingUI.hire(10)">+10 Arbeiter</button>
+                <button class="modal-btn" onclick="BuildingUI.hire(1)">+1 Arbeiter</button>
+                <button class="modal-btn" onclick="BuildingUI.hire(10)">+10 Arbeiter</button>
                 ${upgradeButton}
             </div>
         `;

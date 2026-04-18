@@ -18,7 +18,7 @@ const GAME_CONFIG = {
     prices: {
         slot1: 5,        // WaxStore
         slot2: 25,       // NektarStore
-        slot3: 250,      // Flugschule
+        slot3: 50,      // Flugschule
         slot4: 1500,     // EnzymLabor
         slot5: 45000,    // Nektar-Pipeline
         slot6: 2500000,  // Hive-Core
@@ -61,14 +61,14 @@ const GAME_CONFIG = {
     labels: {
         slot1: "WaxStore (5 🍯)", 
         slot2: "NektarStore (25 🍯)",
-        slot3: "Flugschule (250 🍯)", 
+        slot3: "Flugschule (50 🍯)", 
         slot4: "EnzymLabor (1.5k 🍯)",
         slot5: "Nektar-Pipeline (45k 🍯)", 
         slot6: "Hive-Core (2.5M 🍯)"
     },
 
     audio: {
-        bgMusicPath: 'sfx/relaxed bees.mp3',
+        bgMusicPath: 'sfx/relaxedbees.mp3',
         defaultVolume: 0.4
     }
 };

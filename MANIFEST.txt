@@ -37,7 +37,7 @@ Ein täuschend echter Idle-Clicker. Er beginnt bunt, fröhlich und belohnend. Je
 
     Mitte: Die "Königin" wird seltener erwähnt, "BeeCorp Management" übernimmt die Kommunikation.
 
-    Ende: Bienen werden "deaktiviert" statt "schlafen zu gehen". Der Counter für tote Bienen wird zum relevanten Faktor.
+    Ende: Bienen werden "deaktiviert" statt "schlafen zu gehen". Der Counter für tote Bienen die wachsende Verschmutzung und Unzufriedenheit wird zum relevanten Faktor.
 
 5. ENTWICKLER-REGELN (Für zukünftige Prompts)
 

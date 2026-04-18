@@ -1,6 +1,33 @@
 // newscript.js
+
+const Preloader = {
+    images: {},
+    
+    init() {
+        const imageFiles = [
+            'gfx/game.jpg',
+            'gfx/wax1.png', 'gfx/wax2.png',
+            'gfx/nektar1.png', 'gfx/nektar2.png',
+            'gfx/flug1.png', 'gfx/flug2.png',
+            'gfx/enzym1.png', 'gfx/enzym2.png',
+            'gfx/pipeline1.png', 'gfx/pipeline2.png',
+            'gfx/core1.png', 'gfx/core2.png'
+        ];
+
+        imageFiles.forEach(src => {
+            const img = new Image();
+            img.src = src;
+            this.images[src] = img;
+        });
+
+        // Preload für die bekannten Sounds
+        if (window.AudioManager) {
+            ['honey.wav', 'nektar.wav', 'bee.wav', 'baba.wav'].forEach(sfx => window.AudioManager.preloadSfx(sfx));
+        }
+    }
+};
+
 const GameData = {
-    // Dynamischer Import der Startwerte aus der Config
     stats: { ...GAME_CONFIG.startingStats },
     buildings: {
         slot1: false, slot2: false, slot3: false,
@@ -34,41 +61,6 @@ const GameData = {
             action: () => { GameData.housing.slot2.maxWorkers = GAME_CONFIG.limits.upgradedMaxWorkers; GameData.housing.slot2.level = 1; }
         }
     ]
-};
-
-const AudioManager = {
-    bgMusic: new Audio(GAME_CONFIG.audio.bgMusicPath),
-    isMuted: false,
-    hasStarted: false,
-
-    init() {
-        this.bgMusic.loop = true;
-        this.bgMusic.volume = GAME_CONFIG.audio.defaultVolume;
-        
-        const btn = document.getElementById('sound-toggle');
-        if(btn) {
-            btn.onclick = () => this.toggleMute();
-        }
-
-        document.addEventListener('click', () => {
-            if (!this.hasStarted && !this.isMuted) {
-                this.bgMusic.play().catch(e => console.log("Audio play blocked"));
-                this.hasStarted = true;
-            }
-        }, { once: true });
-    },
-
-    toggleMute() {
-        this.isMuted = !this.isMuted;
-        const btn = document.getElementById('sound-toggle');
-        if (this.isMuted) {
-            this.bgMusic.pause();
-            btn.innerHTML = '🔇';
-        } else {
-            this.bgMusic.play();
-            btn.innerHTML = '🔊';
-        }
-    }
 };
 
 const UI = {
@@ -105,7 +97,8 @@ const UI = {
                 
                 if(img) {
                     let displayLevel = housing.level === 0 ? 1 : housing.level;
-                    img.src = `gfx/${typePrefix}${displayLevel}.png`;
+                    const newSrc = `gfx/${typePrefix}${displayLevel}.png`;
+                    if (img.getAttribute('src') !== newSrc) img.src = newSrc;
                     img.style.display = "block";
                 }
                 if(label) label.style.display = "none";
@@ -147,7 +140,19 @@ const UI = {
             void slotElement.offsetWidth; 
             slotElement.classList.add('active-pump');
 
-            let iconSymbol = (slotNr === 1 || slotNr === 4) ? "🍯" : (slotNr === 2 || slotNr === 5) ? "🌸" : (slotNr === 3 || slotNr === 6) ? "🐝" : "";
+            let iconSymbol = "";
+            let sfxFile = "";
+
+            if (slotNr === 1 || slotNr === 4) {
+                iconSymbol = "🍯";
+                sfxFile = "honey.wav";
+            } else if (slotNr === 2 || slotNr === 5) {
+                iconSymbol = "🌸";
+                sfxFile = "nektar.wav";
+            } else if (slotNr === 3 || slotNr === 6) {
+                iconSymbol = "🐝";
+                sfxFile = "bee.wav";
+            }
 
             if (iconSymbol) {
                 const floatingIcon = document.createElement('span');
@@ -155,6 +160,10 @@ const UI = {
                 floatingIcon.className = 'floating-spawn-icon';
                 slotElement.appendChild(floatingIcon);
                 setTimeout(() => floatingIcon.remove(), 1000);
+            }
+
+            if (sfxFile && window.AudioManager) {
+                window.AudioManager.playSfx(sfxFile);
             }
             
             setTimeout(() => slotElement.classList.remove('active-pump'), 300);
@@ -251,6 +260,7 @@ Object.keys(GameData.labels).forEach((key, index) => {
 });
 
 window.onload = () => {
+    Preloader.init();
     UI.refreshBuildings();
     startHoneyProduction();
     startNectarProduction();
@@ -258,7 +268,6 @@ window.onload = () => {
     
     if (window.StoryModule) window.StoryModule.init();
     if (window.BuildingUI) window.BuildingUI.init();
-    AudioManager.init();
     
     setInterval(checkShopNotifications, GAME_CONFIG.intervals.shopCheck);
 };
@@ -267,6 +276,7 @@ document.getElementById('bee-generator').onclick = (e) => {
     GameData.stats.nektar++;
     UI.updateStat('nektar', GameData.stats.nektar);
     UI.refreshBuildings();
+    if(window.AudioManager) window.AudioManager.playSfx('baba.wav'); 
     createPollenEffect(e);
 };
 
@@ -281,18 +291,35 @@ document.getElementById('shop-trigger').onclick = () => {
     }
 };
 
+function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+            console.error(`Fehler beim Aktivieren des Vollbildmodus: ${err.message}`);
+        });
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+    }
+}
+
 function createPollenEffect(e) {
     const container = document.querySelector('.game-container');
     const numParticles = 8;
+    
     for (let i = 0; i < numParticles; i++) {
         const particle = document.createElement('div');
         particle.className = 'pollen-particle';
-        particle.style.left = `${e.clientX}px`;
-        particle.style.top = `${e.clientY}px`;
+        
+        particle.style.left = `${e.pageX}px`;
+        particle.style.top = `${e.pageY+50}px`;
+        
         const drift = (Math.random() - 0.5) * 60 + "px";
         particle.style.setProperty('--drift', drift);
-        const duration = 0.5 + Math.random() * 0.8;
+        
+        const duration = 1.5 + Math.random() * 1.0; 
         particle.style.animation = `pollen-fall ${duration}s ease-out forwards`;
+        
         container.appendChild(particle);
         setTimeout(() => particle.remove(), duration * 1000);
     }
