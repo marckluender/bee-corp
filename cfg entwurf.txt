@@ -1,0 +1,117 @@
+// config.js - INTEGRATED VERSION (V1.2)
+// Fusion aus Original-Parametern und 5-Level-System nach Master-Manifest
+
+const GAME_CONFIG = {
+    // Start-Ressourcen
+    startingStats: {
+        nektar: 0,
+        honig: 0,
+        bienen: 0,
+        deactivatedBees: 0 // Neu: Tracking für Verschleiß laut Manifest
+    },
+
+    // Kapazitäten und Arbeiter-Limits
+    limits: {
+        defaultMaxWorkers: 10,
+        upgradedMaxWorkers: 50,
+        workersNeededForLevel2: 10,
+        workerStepPerLevel: 20 // Erhöhung des Limits pro Gebäude-Upgrade
+    },
+
+    // Das 6x5 System: 6 Gebäude-Säulen mit exakt 5 Leveln
+    buildings: {
+        slot1: {
+            id: "waxStore",
+            levels: [
+                { price: 5, label: "Wachs-Hütte", honeyMult: 1, attrition: 0 },
+                { price: 25, label: "Wachs-Lager", honeyMult: 2, attrition: 0 },
+                { price: 125, label: "Extraktions-Kammer", honeyMult: 5, attrition: 0.01 },
+                { price: 750, label: "Polymer-Fabrik", honeyMult: 12, attrition: 0.05 },
+                { price: 5000, label: "Chemische Extraktions-Anlage", honeyMult: 30, attrition: 0.15 }
+            ]
+        },
+        slot2: {
+            id: "nektarStore",
+            levels: [
+                { price: 25, label: "Blumen-Garten", nectarRate: 1, attrition: 0 },
+                { price: 150, label: "Sammel-Station", nectarRate: 3, attrition: 0 },
+                { price: 1000, label: "Monokultur-Feld", nectarRate: 10, attrition: 0.02 },
+                { price: 8000, label: "Extraktions-Silo", nectarRate: 25, attrition: 0.08 },
+                { price: 50000, label: "Raubbau-Zentrum", nectarRate: 75, attrition: 0.20 }
+            ]
+        },
+        slot3: {
+            id: "flugschule",
+            levels: [
+                { price: 50, label: "Flug-Übung", beeRate: 1, attrition: 0 },
+                { price: 300, label: "Bienen-Akademie", beeRate: 2, attrition: 0 },
+                { price: 2000, label: "Klon-Kammer", beeRate: 6, attrition: 0.05 },
+                { price: 15000, label: "Biomasse-Drucker", beeRate: 15, attrition: 0.12 },
+                { price: 120000, label: "Rapid-Growth Lab", beeRate: 40, attrition: 0.25 }
+            ]
+        },
+        slot4: {
+            id: "enzymLabor",
+            levels: [
+                { price: 1500, label: "Honig-Küche", efficiency: 1.1 },
+                { price: 10000, label: "Enzym-Mischer", efficiency: 1.5 },
+                { price: 75000, label: "Gen-Manipulator", efficiency: 2.5 },
+                { price: 500000, label: "Bio-Katalysator", efficiency: 6.0 },
+                { price: 2500000, label: "Synthetik-Reaktor", efficiency: 15.0 }
+            ]
+        },
+        slot5: {
+            id: "pipeline",
+            levels: [
+                { price: 45000, label: "Röhren-System", speedMult: 1.2 },
+                { price: 250000, label: "Druck-Leitung", speedMult: 2.0 },
+                { price: 1500000, label: "Vakuum-Logistik", speedMult: 4.0 },
+                { price: 10000000, label: "Flow-Control AI", speedMult: 10.0 },
+                { price: 75000000, label: "Global Bee-Grid", speedMult: 25.0 }
+            ]
+        },
+        slot6: {
+            id: "hiveCore",
+            levels: [
+                { price: 2500000, label: "Königinnen-Thron", globalBoost: 2 },
+                { price: 20000000, label: "Zentral-Interface", globalBoost: 5 },
+                { price: 150000000, label: "BeeCorp HQ Node", globalBoost: 12 },
+                { price: 900000000, label: "Neurales Kollektiv", globalBoost: 30 },
+                { price: 5000000000, label: "Hive-Mind OS", globalBoost: 100 }
+            ]
+        }
+    },
+
+    // Beibehaltung der ursprünglichen Zeitintervalle für Logik-Ticks
+    intervals: {
+        honeyBase: 5000,
+        honeyUpgraded: 2500,
+        nectarBase: 10000,
+        beeBase: 10000,
+        beeUpgraded: 5000,
+        shopCheck: 2000,
+        nectarProductionTick: 10000,
+        tutorialNectarWait: 10000
+    },
+
+    // Beibehaltung der Produktions-Boni Faktoren für Berechnungen
+    bonuses: {
+        workerEfficiency: 0.1,
+        workerPerBee: 0.01,
+        level2FlatBonus: 10
+    },
+
+    // Story & Tutorial Schwellenwerte
+    storyThresholds: {
+        tutorialNectarStep1: 1,
+        tutorialNectarStep2: 10,
+        milestoneBees: 1,
+        milestoneWorkersSlot1: 5
+    },
+
+    // Audio-Einstellungen
+    audio: {
+        bgMusicPath: 'sfx/relaxedbees.mp3',
+        defaultVolume: 0.4
+    }
+};

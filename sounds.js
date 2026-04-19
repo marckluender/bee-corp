@@ -1,9 +1,9 @@
 // sounds.js - Zentrales Sound-Management für Bee-Corp
 window.AudioManager = {
     volumes: {
-        music: 0.3,
-        sfx: 0.5,
-        voice: 1.0
+        music: 0.33,
+        sfx: 0.33,
+        voice: 0.66
     },
 
     channels: {
@@ -20,7 +20,6 @@ window.AudioManager = {
             this.channels.music.src = GAME_CONFIG.audio.bgMusicPath;
         }
         
-        this.channels.music.src = GAME_CONFIG.audio.bgMusicPath;
         this.channels.music.loop = true;
         this.updateVolumes();
         
@@ -81,12 +80,14 @@ window.AudioManager = {
         const instance = this.sfxCache[file].cloneNode();
         instance.volume = this.volumes.sfx;
 
-        // Pitch-Variation: Zufällige Tonhöhe für organischen Sound
-        const randomPitch = 0.7 + Math.random() * 0.2;
-        instance.playbackRate = randomPitch;
-
         this.sfxPool.push(instance);
-        instance.play().catch(() => {});
+        
+        instance.play().then(() => {
+            // Pitch-Variation: Etwas deutlicherer Bereich (0.85 - 1.15)
+            // Wir setzen es nach dem Start, damit der Browser es sicher übernimmt
+            const randomPitch = 0.85 + Math.random() * 0.3;
+            instance.playbackRate = randomPitch;
+        }).catch(() => {});
 
         // Nach Ende aus dem Pool entfernen
         instance.onended = () => {

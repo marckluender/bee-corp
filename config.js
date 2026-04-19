@@ -69,6 +69,7 @@ const GAME_CONFIG = {
 
     audio: {
         bgMusicPath: 'sfx/relaxedbees.mp3',
-        defaultVolume: 0.4
+        defaultVolume: 0.4,
+        startOverlayPath: 'gfx/beecorpstart.png'
     }
 };

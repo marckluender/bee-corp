@@ -6,6 +6,7 @@ const Preloader = {
     init() {
         const imageFiles = [
             'gfx/game.jpg',
+            'gfx/beecorpstart.png',
             'gfx/wax1.png', 'gfx/wax2.png',
             'gfx/nektar1.png', 'gfx/nektar2.png',
             'gfx/flug1.png', 'gfx/flug2.png',
@@ -168,6 +169,42 @@ const UI = {
             
             setTimeout(() => slotElement.classList.remove('active-pump'), 300);
         }
+    },
+
+    showStartOverlay: () => {
+        const overlay = document.createElement('div');
+        overlay.id = 'game-start-overlay';
+        overlay.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.95); display: flex; justify-content: center;
+            align-items: center; z-index: 2147483647; cursor: pointer; transition: opacity 0.5s;
+        `;
+        
+        const img = document.createElement('img');
+        img.src = GAME_CONFIG.audio.startOverlayPath;
+        img.style.cssText = `
+            width: auto; height: auto; max-width: 80%; max-height: 80%; 
+            object-fit: contain; border: 5px solid #f1c40f; border-radius: 20px;
+            box-shadow: 0 0 50px rgba(241, 196, 15, 0.4);
+            display: block; position: relative; z-index: 2147483648;
+        `;
+        
+        img.onload = () => {
+            img.style.animation = 'start-pump 3s infinite ease-in-out';
+        };
+
+        const style = document.createElement('style');
+        style.textContent = '@keyframes start-pump { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }';
+        document.head.appendChild(style);
+
+        overlay.appendChild(img);
+        document.body.appendChild(overlay);
+        
+        overlay.onclick = () => {
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.remove(), 500);
+            if (window.AudioManager) window.AudioManager.toggleMusic();
+        };
     }
 };
 
@@ -207,18 +244,22 @@ function startHoneyProduction() {
 }
 
 function startNectarProduction() {
-    if (GameData.buildings.slot2) {
-        const workerCount = (window.BuildingUI) ? window.BuildingUI.workers.slot2 : 0;
-        const pipelineBonus = GameData.buildings.slot5 ? GAME_CONFIG.bonuses.pipeline : 0;
-        const levelBonus = (GameData.housing.slot2.level >= 2) ? GAME_CONFIG.bonuses.housingLevel2 : 0;
-        
-        const bonusFactor = 1 * (1 + (workerCount * GAME_CONFIG.bonuses.workerPerBee) + levelBonus + pipelineBonus);
-        GameData.stats.nektar += bonusFactor;
-        UI.updateStat('nektar', GameData.stats.nektar);
-        UI.refreshBuildings();
-        UI.triggerPump(2);
-    }
-    setTimeout(startNectarProduction, GAME_CONFIG.intervals.nectarProductionTick);
+    let baseTime = GAME_CONFIG.intervals.nectarBase;
+    const workerCount = (window.BuildingUI) ? window.BuildingUI.workers.slot2 : 0;
+    const pipelineBonus = GameData.buildings.slot5 ? GAME_CONFIG.bonuses.pipeline : 0;
+    const levelBonus = (GameData.housing.slot2.level >= 2) ? GAME_CONFIG.bonuses.housingLevel2 : 0;
+    
+    let finalTime = baseTime / (1 + (workerCount * GAME_CONFIG.bonuses.workerPerBee) + levelBonus + pipelineBonus);
+
+    setTimeout(() => {
+        if (GameData.buildings.slot2) {
+            GameData.stats.nektar += 1;
+            UI.updateStat('nektar', GameData.stats.nektar);
+            UI.refreshBuildings();
+            UI.triggerPump(2);
+        }
+        startNectarProduction();
+    }, finalTime);
 }
 
 function startBeeProduction() {
@@ -261,6 +302,7 @@ Object.keys(GameData.labels).forEach((key, index) => {
 
 window.onload = () => {
     Preloader.init();
+    UI.showStartOverlay();
     UI.refreshBuildings();
     startHoneyProduction();
     startNectarProduction();
